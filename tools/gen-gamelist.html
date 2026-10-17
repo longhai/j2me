@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tạo gamelist.js tự động (tự đoán màn hình)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f5f5f5;color:#1a1a1a;padding:20px;max-width:760px;margin:0 auto}
+h1{font-size:22px;margin-bottom:8px}
+p{color:#666;font-size:14px;margin-bottom:16px;line-height:1.5}
+.drop{border:2px dashed #3482ff;border-radius:16px;background:#fff;padding:40px 20px;text-align:center;cursor:pointer;transition:background .2s}
+.drop:hover,.drop.over{background:#eef4ff}
+.drop b{color:#3482ff}
+#fileInput{display:none}
+.btn{display:inline-block;margin-top:16px;padding:12px 28px;border:0;border-radius:12px;background:#3482ff;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+.btn:disabled{background:#ccc;cursor:default}
+.btn.dl{background:#34c759}
+.btn.small{padding:8px 14px;font-size:13px;margin:4px 4px 4px 0}
+#list{margin-top:16px}
+.game{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.game .top{display:flex;align-items:center;gap:12px}
+.game img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:#eee;flex-shrink:0}
+.game .n{font-weight:600;font-size:14px}
+.game .m{color:#999;font-size:12px}
+.game .cfg{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.game .cfg label{font-size:13px;color:#555;display:flex;align-items:center;gap:6px}
+.game .cfg select{padding:6px 8px;border-radius:8px;border:1px solid #ddd;font-size:13px;background:#fff}
+.detect{font-size:12px;color:#888;margin-top:4px}
+.detect b{color:#3482ff}
+#status{margin-top:12px;font-size:14px;color:#666}
+#globalBar{background:#fff;border-radius:12px;padding:12px 14px;margin-top:12px;display:none;flex-wrap:wrap;gap:8px;align-items:center}
+#globalBar label{font-size:13px;color:#555;display:flex;align-items:center;gap:6px}
+#globalBar select{padding:6px 8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
+textarea{width:100%;height:120px;margin-top:12px;border-radius:8px;border:1px solid #ddd;padding:8px;font-size:12px;display:none}
+.hint{font-size:12px;color:#999;margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+<h1>🎮 Tạo gamelist.js tự động</h1>
+<p>Chọn <b>nhiều file .jar</b> cùng lúc (giữ Ctrl để chọn nhiều). Công cụ sẽ đọc tên game,
+phiên bản, nhà phát hành từ trong file JAR, <b>tự đoán kích thước màn hình</b> (từ tên file,
+manifest, ảnh trong game) và loại bàn phím, rồi sinh ra file <b>gamelist.js</b>.
+Nếu manifest ghi kích thước mà player không hỗ trợ (vd 176x208), công cụ sẽ tự chọn
+kích thước gần đúng nhất. Bạn có thể chỉnh lại từng game trước khi tải về.</p>
+
+<div class="drop" id="drop">
+  <div style="font-size:40px">📦</div>
+  <div><b>Bấm để chọn file .jar</b> hoặc kéo thả vào đây</div>
+  <div style="font-size:12px;color:#999;margin-top:8px">Có thể chọn hàng chục file một lúc</div>
+</div>
+<input type="file" id="fileInput" accept=".jar" multiple>
+
+<div id="globalBar">
+  <label>Màn hình mặc định:
+    <select id="globalSize"></select>
+  </label>
+  <button class="btn small" id="applySize">Áp dụng cho tất cả</button>
+  <label>Bàn phím mặc định:
+    <select id="globalKb">
+      <option value="方形全键盘">Bàn phím đầy đủ</option>
+      <option value="无按键">Không phím (cảm ứng)</option>
+    </select>
+  </label>
+  <button class="btn small" id="applyKb">Áp dụng</button>
+</div>
+
+<div id="status"></div>
+<div id="list"></div>
+<button class="btn dl" id="dlBtn" disabled>Tải gamelist.js</button>
+<textarea id="out" readonly></textarea>
+<p class="hint">Cách đoán màn hình: ① tên file có ghi kích thước (vd <i>game-240x320.jar</i>) →
+② manifest có khai báo → ③ ảnh trong game đúng chuẩn màn hình → ④ <b>code dùng nhiều hằng số kích thước</b> →
+⑤ mặc định 240x320. Bàn phím: manifest khai báo cảm ứng, tên file có "touch", hoặc <b>code có xử lý chạm</b> (pointerPressed...) thì dùng "Không phím".</p>
+
+<script src="../js/jszip.min.js"></script>
+<script id="core">
+/* ===== Logic đoán cấu hình - không dùng DOM ===== */
+var SIZES=["size-128x128","size-176x220","size-240x320","size-240x400","size-320x240",
+"size-360x640","size-400x240","size-480x800","size-640x360","size-800x480"];
+var KB_FULL="方形全键盘", KB_NONE="无按键";
+
+function closestSize(w,h){
+  var best=null,bestScore=1e9;
+  for(var i=0;i<SIZES.length;i++){
+    var m=SIZES[i].match(/size-(\d+)x(\d+)/),sw=+m[1],sh=+m[2];
+    var score=Math.abs(w/h-sw/sh)*10+Math.abs(Math.log((w*h)/(sw*sh)));
+    if(score<bestScore){bestScore=score;best=SIZES[i];}
+  }
+  return best;
+}
+
+function detectSize(fileName, attrs, pngSizes, codeGuess){
+  var m=fileName.match(/(128x128|176x220|240x320|240x400|320x240|360x640|400x240|480x800|640x360|800x480)/i);
+  if(m)return{v:"size-"+m[1].toLowerCase(),why:"tên file có ghi kích thước"};
+  var keys=["Nokia-MIDlet-Original-Display-Size","Nokia-MIDlet-Screen-Size","MIDlet-Screen-Size","Display-Size"];
+  for(var i=0;i<keys.length;i++){
+    var av=attrs[keys[i]];
+    if(av){
+      var m2=String(av).match(/(\d+)\s*[x,×*,]\s*(\d+)/);
+      if(m2){
+        var s="size-"+m2[1]+"x"+m2[2];
+        if(SIZES.indexOf(s)>=0)return{v:s,why:"manifest khai báo"};
+        return{v:closestSize(+m2[1],+m2[2]),why:"manifest ghi "+m2[1]+"×"+m2[2]+" (lấy gần đúng nhất)"};
+      }
+    }
+  }
+  for(var j=0;j<pngSizes.length;j++){
+    var p=pngSizes[j],s2="size-"+p.w+"x"+p.h;
+    if(SIZES.indexOf(s2)>=0)return{v:s2,why:"ảnh "+p.name.split("/").pop()+" đúng chuẩn"};
+  }
+  if(codeGuess)return codeGuess;
+  return{v:"size-240x320",why:"mặc định"};
+}
+// đoán size từ bytecode: đếm lệnh sipush <số>.
+// Mỗi size tính m = min(số lần xuất hiện W, số lần xuất hiện H).
+// Ngưỡng: chữ nhật >=40, vuông >=80 (số như 128 hay bị dùng làm hằng số đồ họa).
+function detectSizeFromCode(sipushCounts){
+  var best=null,bestMin=0;
+  for(var i=0;i<SIZES.length;i++){
+    var wh=SIZES[i].replace("size-","").split("x"),w=+wh[0],h=+wh[1];
+    var cw=sipushCounts[w]||0,ch=sipushCounts[h]||0;
+    var m=(w===h)?cw:Math.min(cw,ch);
+    var need=(w===h)?80:40;
+    if(m>=need&&m>bestMin){bestMin=m;best=SIZES[i];}
+  }
+  if(best)
+    return{v:best,why:"code dùng nhiều hằng số "+best.replace("size-","").replace("x","×")+" ("+bestMin+" lần)"};
+  return null;
+}
+function detectKb(fileName, attrs, touchCode){
+  var t=attrs["MIDlet-Touch-Support"];
+  if(t&&/true/i.test(t))return{v:KB_NONE,why:"manifest khai báo cảm ứng"};
+  if(/touch/i.test(fileName))return{v:KB_NONE,why:"tên file có chữ touch"};
+  if(touchCode)return{v:KB_NONE,why:"code có xử lý chạm (pointerPressed...)"};
+  return{v:KB_FULL,why:"mặc định"};
+}
+function hasTouchCode(classTexts){
+  for(var i=0;i<classTexts.length;i++){
+    var t=classTexts[i];
+    if(t.indexOf("pointerPressed")>=0||t.indexOf("pointerReleased")>=0||t.indexOf("pointerDragged")>=0)
+      return true;
+  }
+  return false;
+}
+function detectMulti(fileName, lngFiles){
+  if(/multi/i.test(fileName))return{multi:true,why:"tên file có chữ multi"};
+  // nhiều bộ chữ/giao diện theo kích thước (vd MAIN + MAIN_LARGE)
+  var hasMain=false,hasLarge=false,szCount=0,seen={};
+  for(var i=0;i<lngFiles.length;i++){
+    var n=lngFiles[i].toUpperCase();
+    if(n.indexOf("MAIN_LARGE")>=0||n.indexOf("LARGE")>=0)hasLarge=true;
+    if(n.indexOf("MAIN")>=0)hasMain=true;
+    var m=n.match(/(128|176|208|220|240|320|400|360|640|480|800)/);
+    if(m&&!seen[m[1]]){seen[m[1]]=1;szCount++;}
+  }
+  if(hasMain&&hasLarge)return{multi:true,why:"có nhiều bộ giao diện (MAIN/MAIN_LARGE)"};
+  if(szCount>=2)return{multi:true,why:"tài nguyên cho nhiều kích thước"};
+  return{multi:false,why:""};
+}
+/* ===== hết core ===== */
+</script>
+<script>
+var drop=document.getElementById('drop'),fi=document.getElementById('fileInput');
+var list=document.getElementById('list'),status=document.getElementById('status');
+var dlBtn=document.getElementById('dlBtn'),out=document.getElementById('out');
+var games=[];
+
+var gSize=document.getElementById('globalSize'),gKb=document.getElementById('globalKb');
+SIZES.forEach(function(s){
+  var o=document.createElement('option');o.value=s;o.textContent=s.replace('size-','').replace('x','×');
+  if(s==="size-240x320")o.selected=true;gSize.appendChild(o);
+});
+document.getElementById('globalBar').style.display='none';
+
+drop.onclick=function(){fi.click();};
+['dragover','dragenter'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('over');});});
+['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
+drop.addEventListener('drop',function(ev){handleFiles(ev.dataTransfer.files);});
+fi.onchange=function(){handleFiles(fi.files);};
+
+function parseManifest(text){
+  var attrs={};
+  text.replace(/\r\n|\r/g,'\n').replace(/\n /g,'').split('\n').forEach(function(line){
+    if(!line)return;
+    var i=line.indexOf(':');
+    if(i>0)attrs[line.substring(0,i).trim()]=line.substring(i+1).trim();
+  });
+  return attrs;
+}
+function esc(s){return JSON.stringify(s);}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function getPngSizes(zip){
+  var ps=[];
+  zip.forEach(function(path,file){
+    if(/\.png$/i.test(path)&&!file.dir){
+      ps.push(file.async("uint8array").then(function(d){
+        if(d.length>24&&d[0]===0x89&&d[1]===0x50&&d[2]===0x4E&&d[3]===0x47){
+          var w=(d[16]<<24)|(d[17]<<16)|(d[18]<<8)|d[19];
+          var h=(d[20]<<24)|(d[21]<<16)|(d[22]<<8)|d[23];
+          if(w>0&&h>0&&w<5000&&h<5000)return{name:path,w:w,h:h};
+        }
+        return null;
+      }).catch(function(){return null;}));
+    }
+  });
+  return Promise.all(ps).then(function(a){return a.filter(function(x){return x;});});
+}
+
+// quét file .class: đếm lệnh sipush <số> + gom text để tìm API cảm ứng
+function getClassSignals(zip){
+  var sipushCounts={},texts=[],ps=[];
+  zip.forEach(function(path,file){
+    if(/\.class$/i.test(path)&&!file.dir){
+      ps.push(file.async("uint8array").then(function(d){
+        for(var i=0;i<d.length-2;i++){
+          if(d[i]===0x11){var v=(d[i+1]<<8)|d[i+2];sipushCounts[v]=(sipushCounts[v]||0)+1;}
+        }
+        var s="";
+        for(var j=0;j<d.length;j+=4096){
+          s+=String.fromCharCode.apply(null,d.subarray(j,Math.min(j+4096,d.length)));
+        }
+        texts.push(s);
+        return null;
+      }).catch(function(){return null;}));
+    }
+  });
+  return Promise.all(ps).then(function(){return{sipush:sipushCounts,texts:texts};});
+}
+
+function handleFiles(files){
+  games=[];list.innerHTML='';out.style.display='none';dlBtn.disabled=true;
+  document.getElementById('globalBar').style.display='none';
+  var arr=Array.prototype.slice.call(files).filter(function(f){return /\.jar$/i.test(f.name);});
+  if(!arr.length){status.textContent='Chưa chọn file .jar nào.';return;}
+  status.textContent='Đang đọc '+arr.length+' file...';
+  var done=0;
+  arr.forEach(function(f){
+    readJar(f).then(function(g){
+      games.push(g);done++;
+      renderOne(g);
+      status.textContent='Đã đọc '+done+'/'+arr.length+' file';
+      if(done===arr.length)finish();
+    }).catch(function(e){
+      done++;
+      status.textContent='Đã đọc '+done+'/'+arr.length+' file (bỏ qua '+f.name+')';
+      if(done===arr.length)finish();
+    });
+  });
+}
+function readJar(file){
+  return JSZip.loadAsync(file).then(function(zip){
+    var mf=zip.file('META-INF/MANIFEST.MF');
+    if(!mf)throw 'thiếu MANIFEST.MF';
+    return mf.async('uint8array').then(function(d){
+      var attrs=parseManifest(new TextDecoder('utf-8').decode(d));
+      return getPngSizes(zip).then(function(pngSizes){
+      return getClassSignals(zip).then(function(sig){
+        var base=file.name.replace(/\.jar$/i,'');
+        var name=attrs['MIDlet-Name']||base;
+        var version=attrs['MIDlet-Version']||'';
+        var vendor=attrs['MIDlet-Vendor']||'';
+        var cls='';
+        var m1=attrs['MIDlet-1'];
+        if(m1){var p=m1.split(',');if(p[2])cls=p[2].trim();}
+        var iconP=attrs['MIDlet-Icon']||'';
+        if(iconP&&iconP.charAt(0)==='/')iconP=iconP.substr(1);
+        var iconFile=iconP?zip.file(iconP):null;
+        var pIcon=iconFile?iconFile.async('uint8array').then(function(dd){
+          return URL.createObjectURL(new Blob([dd],{type:'image/png'}));
+        }).catch(function(){return ''; }):Promise.resolve('');
+        return pIcon.then(function(iconUrl){
+          var codeGuess=detectSizeFromCode(sig.sipush);
+          var ds=detectSize(file.name,attrs,pngSizes,codeGuess);
+          var dk=detectKb(file.name,attrs,hasTouchCode(sig.texts));
+          var lngFiles=[];
+          zip.forEach(function(path,f){if(/\.lng$/i.test(path)&&!f.dir)lngFiles.push(path);});
+          var dm=detectMulti(file.name,lngFiles);
+          return{jarName:file.name,name:name,version:version,publisher:vendor,
+            midletClassName:cls,icon:iconUrl,
+            size:ds.v,sizeWhy:ds.why,kb:dk.v,kbWhy:dk.why,
+            multi:dm.multi,multiWhy:dm.why};
+        });
+      });
+      });
+    });
+  });
+}
+function sizeOptions(sel){
+  return SIZES.map(function(s){
+    return '<option value="'+s+'"'+(s===sel?' selected':'')+'>'+s.replace('size-','').replace('x','×')+'</option>';
+  }).join('');
+}
+function renderOne(g){
+  var d=document.createElement('div');d.className='game';
+  d.innerHTML='<div class="top"><img src="'+(g.icon||'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 40 40%27%3E%3Crect width=%2740%27 height=%2740%27 rx=%278%27 fill=%27%23eee%27/%3E%3C/svg%3E')+'">'
+    +'<div><div class="n">'+escapeHtml(g.name)+'</div><div class="m">'+escapeHtml(g.jarName)
+    +(g.version?' · v'+escapeHtml(g.version):'')+(g.publisher?' · '+escapeHtml(g.publisher):'')+'</div>'
+    +'<div class="detect">🔍 Đoán màn hình: <b>'+g.size.replace('size-','').replace('x','×')+'</b> ('+escapeHtml(g.sizeWhy)+')'
+    +' · Bàn phím: <b>'+(g.kb===KB_NONE?'Không phím':'Đầy đủ')+'</b> ('+escapeHtml(g.kbWhy)+')'
+    +(g.multi?' · <span style="color:#34c759;font-weight:600">🔀 Đa màn hình</span> ('+escapeHtml(g.multiWhy)+' — size nào cũng chạy)':'')
+    +'</div></div></div>'
+    +'<div class="cfg"><label>📐 Màn hình: <select class="selSize">'+sizeOptions(g.size)+'</select></label>'
+    +'<label>⌨️ Bàn phím: <select class="selKb">'
+    +'<option value="'+KB_FULL+'"'+(g.kb===KB_FULL?' selected':'')+'>Đầy đủ (phím cứng)</option>'
+    +'<option value="'+KB_NONE+'"'+(g.kb===KB_NONE?' selected':'')+'>Không phím (cảm ứng)</option>'
+    +'</select></label></div>';
+  d.querySelector('.selSize').addEventListener('change',function(e){g.size=e.target.value;});
+  d.querySelector('.selKb').addEventListener('change',function(e){g.kb=e.target.value;});
+  list.appendChild(d);
+}
+document.getElementById('applySize').addEventListener('click',function(){
+  var v=gSize.value;
+  games.forEach(function(g){g.size=v;});
+  Array.prototype.forEach.call(list.querySelectorAll('.selSize'),function(s){s.value=v;});
+});
+document.getElementById('applyKb').addEventListener('click',function(){
+  var v=gKb.value;
+  games.forEach(function(g){g.kb=v;});
+  Array.prototype.forEach.call(list.querySelectorAll('.selKb'),function(s){s.value=v;});
+});
+function finish(){
+  games.sort(function(a,b){return a.jarName.localeCompare(b.jarName);});
+  document.getElementById('globalBar').style.display='flex';
+  var lines=['// Tu dong sinh bang tools/gen-gamelist.html — dung sua tay!',
+    '// Them game: mo lai cong cu nay, chon them file .jar, tai file moi.',
+    'var isbatch=0,GameList=['];
+  games.forEach(function(g){
+    lines.push('{name:'+esc(g.name)+',jarName:'+esc(g.jarName)+',midletClassName:'+esc(g.midletClassName)
+      +',publisher:'+esc(g.publisher)+',version:'+esc(g.version)
+      +',canvasSize:'+esc(g.size)+',keyboardLayout:'+esc(g.kb)+',screenRotation:"none"},');
+  });
+  lines.push('];');
+  lines.push('function getGameRuntimeDefaults(e){for(var a=0;a<GameList.length;a++){var n=GameList[a];'
+    +'if(n.jarName===e)return{canvasSize:n.canvasSize||"",keyboardLayout:n.keyboardLayout||"",rotation:n.screenRotation||"none"}}return null}');
+  out.value=lines.join('\n');
+  dlBtn.disabled=false;
+  status.textContent='Xong! Tìm thấy '+games.length+' game. Kiểm tra/chỉnh lại màn hình từng game rồi bấm "Tải gamelist.js".';
+}
+dlBtn.onclick=function(){
+  var blob=new Blob([out.value],{type:'text/javascript;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='gamelist.js';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+};
+</script>
+</body>
+</html>

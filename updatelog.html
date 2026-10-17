@@ -1,0 +1,490 @@
+<!DOCTYPE html>  
+<html>
+<head>
+<script src="js/theme.js"></script>
+<meta charset="utf-8">
+<title>Nhật ký cập nhật - Giả lập J2ME</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1"> 
+</head>
+
+<body> 
+
+<br>
+2026-09-02 16:40
+<br>
+Sửa lỗi Anyview khi bật JIT đọc RMS (zh.rc) ném nhầm EOFException rồi thoát do Calendar null. Các luồng nhị phân như DataInputStream không vào JIT nữa, đồng thời hủy cache method cũ.
+<br>
+<br>
+
+<br>
+2026-09-02 16:20
+<br>
+Thêm đa ngôn ngữ giao diện: có sẵn Tiếng Trung giản thể / English, tự theo hệ thống hoặc chọn tay; cũng có thể nhập gói ngôn ngữ JSON hoặc thêm ngôn ngữ mới trong thư mục lang/.
+<br>
+<br>
+
+<br>
+2026-09-02 16:10
+<br>
+Thêm tùy chỉnh cỡ chữ LCDUI (nhỏ/vừa/lớn, mặc định 18/22/26) và tùy chọn mã phím (Nokia / Siemens / Motorola).
+<br>
+<br>
+
+<br>
+2026-09-02 15:17
+<br>
+Thêm tốc độ chạy: hỗ trợ 0.5×–16×, cài đặt chung/riêng truyền qua URL, trang chạy game đổi ngay được ở góc phải phía trên.
+<br>
+<br>
+
+<br>
+2026-05-19 22:30
+<br>
+Thêm game Tháp bí ẩn, gồm bản cảm ứng và bản phím bấm
+<br>
+<br>
+
+<br>
+2026-04-06 17:00
+<br>
+Tắt JIT để tương thích tốt hơn
+<br>
+<br>
+
+
+<br>
+2026-04-06 16:04
+<br>
+Thêm hỗ trợ đa điểm chạm (hình như không mấy tác dụng)
+<br>
+<br>
+
+<br>
+2026-04-05 18:30
+<br>
+Cập nhật giao diện chính
+<br>
+<br>
+
+<br>
+2026-03-09 22:38
+<br>
+Tương thích M3D. Tương thích giao diện văn bản. Thêm giả lập NES.
+<br>
+<br>
+
+<br>
+2025-12-19 15:33
+<br>
+Tương thích M3G. Hỗ trợ WebGL2 trên Safari, thêm 4 game 3D.
+<br>
+<br>
+
+<br>
+2025-12-15 14:16
+<br>
+Nhờ AI sửa lỗi font tùy chỉnh không hiển thị trong các game như Vương quốc thú cưng.
+Sửa lỗi thao tác bàn phím mềm trên thiết bị iPhone
+<br>
+<br>
+
+<br>
+2025-12-11 16:05
+<br>
+Nhờ AI sửa lỗi thân bóng bị lệch và lỗi thân cây trong game Bóng nảy
+<br>
+<br>
+
+<br>
+2024-12-31 19:14
+<br>
+Gỡ các thành phần không cần thiết, cập nhật giao diện
+<br>
+<br>
+
+<br>
+2024-10-16 18:30
+<br>
+Tương thích bàn phím nhỏ trên WP
+<br>
+<br>
+
+
+<br>
+2024-10-16 18:00
+<br>
+Sửa code, tương thích sơ bộ WP 8.1
+<br>
+<br>
+
+<br>
+2024-09-22 18:32
+<br>
+Thêm game Đô thị chọc trời
+<br>
+<br>
+
+<br>
+2024-09-20 17:38
+<br>
+Thêm game Genshin Impact.jar, chạy được trên kernel 2
+<br>
+<br>
+
+<br>
+2024-09-20 17:38
+<br>
+Đổi cấu hình mặc định: kích thước hiển thị 240x320, bàn phím ảo - Lớn, không thu phóng, kernel 2 - Chế độ chuẩn
+<br>
+<br>
+
+<br>
+2024-09-20 17:32
+<br>
+Khôi phục một phần code thực thi của j2me.js, sửa tương thích Anyview (giờ kernel 2 cũng chạy được qq2010_touch)
+<br>
+<br>
+2024-09-20 16:37
+<br>
+Thêm 3 kernel 
+<br>
+classesold.jar: kernel 1 - Chế độ tương thích
+<br>
+classes2.jar: kernel 2 - Chế độ chuẩn
+<br>
+classes.jar: kernel 3 - Chế độ xem trước
+<br>
+Tối ưu tương thích (kernel 1 và kernel 3 tương thích gần giống nhau, kernel 3 hỗ trợ thêm một số class); kernel 2 hơi đặc biệt: chạy được bản Java của Genshin Impact nhưng không chạy được qq2010_touch
+
+<br>
+<br>
+
+2024-09-06 10:08
+<br>
+Gỡ shumway.js
+<br>
+Gỡ thư mục certs
+<br>
+Chuẩn bị cập nhật file classes.jar
+<br>
+Thêm chế độ tương thích (dùng classes.jar cũ, tức classesold.jar). Hiện tại chế độ mới không chạy được QQ2010_touch nhưng chạy được bản Java của Genshin Impact; chế độ tương thích chạy được qq2010_touch nhưng không chạy được bản Java của Genshin Impact
+<br>
+Toàn bộ jar của chế độ mới đều được biên dịch lại từ source Java
+<br>
+Một số class của chế độ tương thích được lấy từ phần mềm khác
+<br>
+Gộp file js/css của index.html và indexbatch.html, thêm GameList.js
+<br>
+Đổi thời điểm lưu file cấu hình: sửa là lưu ngay
+
+<br>
+<br>
+
+2024-09-05 19:07
+<br>
+Gỡ hoàn toàn tham chiếu PicoAudio.js
+Thêm các file class liên quan đến ArrayList
+Đổi độ phân giải 400x800 thành 480x800
+
+<br>
+<br>
+
+2024-09-05 18:03
+<br>
+Sửa bug bản cảm ứng của Civilization V bị kẹt ở màn hình khởi động
+
+<br>
+<br>
+
+2024-09-05 17:51
+<br>
+Thêm game: Black Myth: Wukong
+
+<br>
+<br>
+
+2024-09-05 15:49
+<br>
+Gọn nhẹ hóa index.html và indexbatch.html
+<br>
+Thêm game: Need for Speed: Shift (bản tiếng Trung)
+<br>
+Nén BenzAMRRecorder.js và webaudio-tinysynth.js
+<br>
+Gỡ webaudio.js
+<br>
+Chặn lỗi của updateCommands để file Zelda 4 bản Hán hóa chạy được
+<br>
+Triển khai "com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/Image;IIII)V" để TowerBloxx chạy được
+<br>
+Thêm độ phân giải 128x128 và 176x220
+<br>
+<br>
+
+2024-09-05 15:21
+<br>
+Gỡ code liên quan đến settings trong main.html và js tương ứng (có thể tối ưu hiệu năng?)
+<br>
+Dọn dẹp, tối ưu code (gọn code thừa)
+<br>
+Đổi màu nút trang chủ, đổi cỡ chữ nút, gỡ text-shadow
+<br>
+Port một số file java từ dự án này (https://github.com/hbao/phonemefeaturedevices) rồi biên dịch thành bytecode (GBK_Reader.class v.v.)
+<br>
+Tham khảo dự án trên, triển khai GBK_Writer (đã gỡ — không hiểu sao thêm vào lại lỗi)
+<br>
+Thêm mức thu phóng 0.5 và 0.75, sửa lỗi chạm bị lệch sau khi thu phóng
+<br>
+Gỡ module thống kê hiệu năng; gỡ gc.html, benchmark.js, timer.js, index2.html, pAudio
+
+<br>
+<br>
+
+2024-08-29 23:28
+<br>
+Sửa một bug tương thích
+Thêm Civilization V bản cảm ứng màn hình lớn
+Thêm Civilization V bản bàn phím
+
+<br>
+<br>
+
+2024-08-29 23:18
+<br>
+Thêm Assassin's Creed 3 bản cảm ứng màn hình lớn 400x800  
+
+<br>
+<br>
+
+2024-08-29 23:12
+<br>
+Thêm Assassin's Creed bản cảm ứng màn hình lớn 400x800
+Thêm độ phân giải 400x800
+
+<br>
+<br>
+
+2024-08-29 23:04
+<br>
+Thêm Assassin's Creed Brotherhood bản cảm ứng 240x400
+
+<br>
+<br>
+
+2024-08-29 22:40
+<br>
+Theo yêu cầu của bạn QQ Đại Băng Côn, thêm độ phân giải 240x400 (đổi độ phân giải xong hình như game cá sấu con hết lỗi)
+
+<br>
+<br>
+
+2024-08-29 21:10
+<br>
+Sửa tương thích Windows Mobile 10 (WP8 hình như báo lỗi tràn bộ nhớ)
+
+<br>
+<br>
+
+2024-07-19 15:36
+<br>
+Thêm game: Diamond Rush, The Incredible Machine
+Viết lại logic tải jar phía server (hình như đã sửa được bug của game cá sấu con)
+<br>
+<br>
+
+2024-06-22 15:55
+<br>
+Thêm game: Nhật ký hoa anh đào - Trái tim thất lạc
+<br>
+<br>
+2024-06-14 18:11
+<br>
+Thêm ứng dụng: QQ2010 bản cảm ứng
+<br>
+<br>
+
+2024-06-14 17:41
+<br>
+Thêm game: Pro Evolution Soccer
+<br>
+<br>
+
+2024-04-28 17:33
+<br>
+Tối ưu logic chạy jar trực tuyến
+Sửa CSS bản cài hàng loạt
+Thêm thanh tiến trình tải jar
+<br>
+<br>
+
+2024-04-28 17:20
+<br>
+Sửa một bug đọc thuộc tính
+Thêm game mới: Where's My Water (Cá sấu Swampy)
+<br>
+<br>
+
+2024-03-27 11:50
+<br>
+Sửa lỗi một số icon game không hiện ở bản cài hàng loạt
+<br>
+<br>
+
+2024-03-27 11:34
+<br>
+Sửa lỗi game Đua rally
+<br>
+<br>
+
+2024-01-29 20:27
+<br>
+Thêm game mới: Nông trại vui vẻ bản Hàn và Công viên kỷ Jura - Quái thú trở lại
+<br>
+<br>
+ 
+2024-01-21 12:45
+<br>
+Thêm bản tải lên hàng loạt indexbatch.html 
+<br>
+<br>
+
+2024-01-03 14:27
+<br>
+Thêm game: The Sims 3
+<br>
+<br>
+
+2024-01-03 14:27
+<br>
+Thêm game: Cờ tướng
+<br>
+<br>
+
+2024-01-03 13:29
+<br>
+Gỡ jsgraphics, có thể đã sửa được tương thích
+<br>
+<br>
+
+2024-01-03 13:06
+<br>
+Khôi phục lỗi bóng trong suốt, chống nhấp nháy texture
+<br>
+<br>
+
+2023-8-26 16:01
+<br>
+Sửa lỗi bóng đổ trong game Bóng nảy, gỡ tham chiếu jsgraphics
+<br>
+<br>
+
+
+2023-8-23 16:45
+<br>
+Cập nhật trang chủ, cảm ơn code của bạn Trường Sa - Ackerman đóng góp
+<br>
+<br>
+
+2023-3-10 13:47
+<br>
+Cũng không nhớ đã sửa gì, chỉ cập nhật j2me.js, chắc là hỗ trợ AOT.
+<br>
+<br>
+
+2023-3-8 18:05
+<br>
+Sửa tương thích AudioContext, cho chạy trên iOS bản cũ.
+<br>
+<br>
+
+2023-2-25 19:18
+<br>
+Đổi index2 thành main để tương thích thao tác phím bấm, tương thích phím trên thiết bị KaiOS.
+<br>
+<br>
+
+2023-2-25 18:33
+<br>
+Sửa tương thích Safari bản cũ.
+<br>
+<br>
+
+2023-2-25 17:51
+<br>
+Sửa lỗi tương thích Firefox 48 (midi trên Firefox 48 phát bị lỗi).
+Xóa tham chiếu axios.
+<br>
+<br>
+
+2023-2-21 16:46
+<br>
+Thêm game: Plants vs Zombies (bản gốc tiếng Anh).
+<br>
+<br>
+
+2023-2-21 16:00
+<br>
+Thêm game: Asphalt 6.
+<br>
+<br>
+
+2023-2-21 15:33
+<br>
+Tối ưu tương thích, giờ đã chạy được app Tiantian Dongting và QQ Music.
+<br>
+<br>
+2023-2-19 06:27
+<br>
+Thêm hỗ trợ âm thanh định dạng AMR và MP3, sửa bug phím bấm của một số game.
+<br>
+<br>
+
+2023-2-18 22:56
+<br>
+Sửa lỗi một số game không có tiếng, hỗ trợ hầu hết âm thanh mid và một phần wav.
+<br>
+<br>
+
+2023-2-18 22:23
+<br>
+Thêm một kernel phát mid mới: webaudio-tinysynth.
+<br>
+<br>
+
+2023-2-18 20:27
+<br>
+Thêm hỗ trợ âm thanh, hiện hỗ trợ cơ bản âm thanh mid và wav; âm thanh wav của Assassin's Creed tạm thời chưa giải mã được; một số game như Đấu địa chủ bị lỗi phân tích âm thanh nên không tải được.
+<br>
+<br>
+
+2023-2-17 17:19
+<br>
+Tối ưu một số exception, thêm game Doodle Jump (lưu ý: Doodle Jump cần tắt cảm biến trọng lực trong cài đặt game mới dùng phím trái/phải chơi được)
+<br>
+<br>
+
+2023-2-17 16:09
+<br>
+Thêm thao tác xóa cache khi khởi động game để tránh xung đột cache, cập nhật classes.jar cho tương thích mạnh hơn
+<br>
+<br>
+
+2023-2-17
+<br>
+Sửa lỗi save: một số app có thể cần bấm Thoát trong app mới lưu save; thêm chức năng xóa jar
+<br>
+<br>
+
+2023-2-16
+<br>
+Cập nhật chức năng tải jar lên.
+<br>
+<br>
+v1.0
+<br>
+Hoàn thành chức năng cơ bản; một số app mở lên báo lỗi thì thử refresh lại.
+<br> 
+
+</body>
+</html>
