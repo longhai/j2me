@@ -555,6 +555,10 @@
 
   window.j2meFitPlayerCanvas = fitCanvas;
 
+  /* Fix: tính lại layout sau khi bàn phím render xong (tránh game co rúm lúc mở đầu) */
+  window.setTimeout(fitCanvas, 500);
+  window.setTimeout(fitCanvas, 1500);
+
   titleLabel.textContent = initialTitle();
   applyPlayerBackground();
   refreshTitle();
