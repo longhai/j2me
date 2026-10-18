@@ -2,7 +2,7 @@
 
 @media (max-width:700px){
   #keypad.dynamic-keypad{
-    max-height:30vh !important;
+    max-height:25vh !important;
   }
 }
 
