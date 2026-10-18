@@ -27,7 +27,7 @@
     z-index: 1000 !important;
     width: 100% !important;
     max-width: 100% !important;
-    max-height: 28vh !important; /* Tăng chiều cao bàn phím trên điện thoại */
+    max-height: 35vh !important; /* Tăng chiều cao bàn phím trên điện thoại */
     margin: 0 !important;
     box-sizing: border-box !important;
     padding-bottom: env(safe-area-inset-bottom, 8px) !important;
@@ -43,6 +43,6 @@
   /* Tự động đẩy nội dung hiển thị trên điện thoại tương ứng với chiều cao mới */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
-    padding-bottom: 30vh !important;
+    padding-bottom: 35vh !important;
   }
 }
