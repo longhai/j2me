@@ -12,8 +12,11 @@
 /* ========================================================== */
 /* BỐ CỤC CHIA 2 PHẦN (GAME + BÀN PHÍM) TRÊN ĐIỆN THOẠI        */
 /* ========================================================== */
+/* ========================================================== */
+/* BỐ CỤC 2 PHẦN TRÊN/DƯỚI VÀ GAME FULL CHIỀU NGANG TRÊN MOBILE */
+/* ========================================================== */
 @media (max-width: 700px) {
-  /* Ép toàn bộ màn hình điện thoại thành 2 phần trên/dưới khít tuyệt đối */
+  /* 1. Ép toàn bộ body thành cột dọc full màn hình */
   body.player-body {
     display: flex !important;
     flex-direction: column !important;
@@ -24,28 +27,42 @@
     box-sizing: border-box !important;
   }
 
-  /* 1. Phần trên: Khung chứa game tự động chiếm không gian còn lại */
+  /* 2. Phần trên: Ép khung game bung full tuyệt đối chiều ngang và lấp đầy phần còn lại */
   body:not(.keypad-hidden) .player-stage,
-  body:not(.keypad-hidden) #display-container {
+  body:not(.keypad-hidden) #display-container,
+  body:not(.keypad-hidden) #display,
+  body:not(.keypad-hidden) #main {
     flex: 1 1 auto !important;
     width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding-bottom: 0 !important;
-    overflow: hidden !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 
-  /* 2. Phần dưới: Bàn phím cố định chiều cao, nằm gọn gàng ở đáy */
+  /* Bung canvas bên trong game giãn theo chiều rộng/chiều cao màn hình */
+  body:not(.keypad-hidden) #canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important; /* Giữ tỷ lệ game không bị méo nhưng phủ tối đa có thể */
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+
+  /* 3. Phần dưới: Bàn phím cố định gọn gàng ở đáy */
   #keypad.dynamic-keypad,
   body:not(.keypad-hidden) #keypad:not(.dynamic-keypad) {
     position: relative !important;
     flex: 0 0 auto !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 34vh !important; /* Chiều cao cố định cho bàn phím, tổng 2 phần vừa khít 100% */
+    height: 34vh !important;
     max-height: 34vh !important;
     margin: 0 !important;
     padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 8px)) 4px !important;
@@ -60,7 +77,7 @@
     overflow: hidden !important;
   }
 
-  /* Cân đối lại các phím bấm bên trong không bị bóp méo */
+  /* Đảm bảo các nút phím không bị bóp méo */
   #keypad.dynamic-keypad .key,
   #keypad.dynamic-keypad .dyn-btn,
   #keypad.dynamic-keypad .dyn-btn-rect {
