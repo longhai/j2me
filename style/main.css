@@ -2,7 +2,7 @@
 
 @media (max-width:700px){
   #keypad.dynamic-keypad{
-    max-height:25vh !important;
+    max-height:30vh !important;
   }
 }
 
@@ -11,7 +11,6 @@ body.player-body:not(.rotated-mode):not(.keypad-hidden) #display-container{
   justify-content:flex-start !important;
 }
 body.player-body:not(.rotated-mode):not(.keypad-hidden) #display{
-  margin:0 auto !important;
   justify-content:flex-start !important;
 }
 body.player-body:not(.rotated-mode):not(.keypad-hidden) #main:not(.rotate-left):not(.rotate-right):not(.rotate-180){
@@ -22,9 +21,7 @@ body.player-body:not(.rotated-mode):not(.keypad-hidden) #main:not(.rotate-left):
    (Nguyên văn code của bạn — giữ đủ các dòng, có dòng nhìn thừa
    nhưng thực tế đang gánh layout nên không cắt.) */
 html:fullscreen,
-html:-webkit-full-screen,
-body.player-body:fullscreen,
-body.player-body:-webkit-full-screen {
+html:-webkit-full-screen {
   width:100% !important;
   height:100% !important;
   min-width:0 !important;
