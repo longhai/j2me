@@ -449,24 +449,6 @@
     fullscreenButton.setAttribute('aria-label', active ? tt('player.exitFs') : tt('player.enterFs'));
     fullscreenButton.title = active ? tt('player.exitFs') : tt('player.enterFs');
     window.setTimeout(fitCanvas, 0);
-    window.setTimeout(fitCanvas, 120);
-    window.setTimeout(fitCanvas, 350);
-    window.setTimeout(fitCanvas, 700);
-    /* Fix fullscreen race: Android đổi viewport bất đồng bộ — đo lại định kỳ
-       cho tới khi kích thước khung ổn định (chắc hơn delay cố định). */
-    (function () {
-      var tries = 0, lastW = -1, lastH = -1, stable = 0;
-      var fsTimer = window.setInterval(function () {
-        var w = displayContainer ? displayContainer.clientWidth : 0;
-        var h = displayContainer ? displayContainer.clientHeight : 0;
-        fitCanvas();
-        tries++;
-        if (w === lastW && h === lastH) { stable++; } else { stable = 0; }
-        lastW = w;
-        lastH = h;
-        if (stable >= 2 || tries >= 12) { window.clearInterval(fsTimer); }
-      }, 500);
-    })();
   }
 
   function toggleFullscreen() {
@@ -478,17 +460,9 @@
           (document.webkitExitFullscreen ? document.webkitExitFullscreen() :
           (document.mozCancelFullScreen ? document.mozCancelFullScreen() : null));
       } else {
-        /* Fullscreen the player body; fall back to the document root on browsers
-           that only support fullscreen on the root element. */
-        var target = document.body || root;
-        var request = target.requestFullscreen || target.webkitRequestFullscreen ||
-          target.mozRequestFullScreen || target.msRequestFullscreen;
-        if (!request) {
-          target = root;
-          request = target.requestFullscreen || target.webkitRequestFullscreen ||
-            target.mozRequestFullScreen || target.msRequestFullscreen;
-        }
-        result = request ? request.call(target) : null;
+        result = root.requestFullscreen ? root.requestFullscreen() :
+          (root.webkitRequestFullscreen ? root.webkitRequestFullscreen() :
+          (root.mozRequestFullScreen ? root.mozRequestFullScreen() : null));
       }
       if (result && typeof result.catch === 'function') result.catch(function () {});
     } catch (e) {}
@@ -580,10 +554,6 @@
   }
 
   window.j2meFitPlayerCanvas = fitCanvas;
-
-  /* Fix: tính lại layout sau khi bàn phím render xong (tránh game co rúm lúc mở đầu) */
-  window.setTimeout(fitCanvas, 500);
-  window.setTimeout(fitCanvas, 1500);
 
   titleLabel.textContent = initialTitle();
   applyPlayerBackground();
