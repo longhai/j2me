@@ -35,6 +35,17 @@
 /* bàn phím dính đáy */
 #keypad{margin-top:auto !important;}
 
+/* (3) Canh giữa bàn phím thường: khung #keypad cũ bị giới hạn
+   560px mà không có margin auto nên dính lệch trái */
+#keypad.row,
+#keypad.row-reverse{
+  justify-content:center !important;
+}
+#keypad:not(.dynamic-keypad){
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
 @media (max-width:700px){
   /* (1) điện thoại: nút cao 36px */
   #keypad:not(.dynamic-keypad) .key{
