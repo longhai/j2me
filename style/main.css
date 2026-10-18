@@ -27,7 +27,7 @@
     z-index: 1000 !important;
     width: 100% !important;
     max-width: 100% !important;
-    max-height: 25vh !important;
+    max-height: 30vh !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     padding-bottom: env(safe-area-inset-bottom, 8px) !important;
@@ -43,6 +43,6 @@
   /* Tự động đẩy nội dung hiển thị trên điện thoại để không bị che */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
-    padding-bottom: 22vh !important;
+    padding-bottom: 32vh !important;
   }
 }
