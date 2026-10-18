@@ -8,8 +8,10 @@
    - Mục (1): bàn phím thường (numpad / joypad)
    - Mục (2): Arcade mini — nút do JS tính theo % KHUNG CHỨA,
      nên thu khung là nút tự nhỏ theo, không cần đụng từng nút.
-   Lưu ý: JS ép nút nhỏ nhất 32px (điện thoại), đừng thu khung
-   dưới ~240px kẻo các nút chạm sàn và chồng lên nhau.
+   Lưu ý: JS ép nút nhỏ nhất 32px (điện thoại), 34px hoặc 42px
+   tùy chiều cao màn hình (xem mục (2) dưới) — đừng thu khung quá
+   hẹp kẻo các nút chạm sàn kích thước mà vị trí % thì khít lại,
+   sẽ chồng lên nhau (nhất là khi fullscreen).
    ============================================================ */
 
 /* (1) Bàn phím thường: chiều cao mỗi nút — desktop 40px, điện thoại 36px */
@@ -21,8 +23,15 @@
 
 /* (2) Arcade mini: thu khung chứa -> nút tự co theo */
 /* margin-inline:auto: khung thu nhỏ phải canh giữa, không lệch trái */
+/* QUAN TRỌNG (fix 2026-10-18 chiều): khung KHÔNG được hẹp hơn ~325px.
+   Nút .dyn-btn đặt tâm theo % (hàng nút khít nhất cách nhau 13%),
+   nhưng đường kính nút = max(11% khung, SÀN JS): sàn = 32px khi màn
+   thấp, 34px khi màn vừa, và 42px khi innerHeight > 700 — fullscreen
+   trên điện thoại thường vượt 700 nên sàn nhảy lên 42px. Khung 300px
+   thì nút chỉ cách nhau 39px < 42px -> ĐÈ NHAU (đúng lỗi bạn chụp).
+   Khung 335px: khoảng cách 43.5px > 42px -> hết đè, nút vẫn gọn. */
 #keypad.dynamic-keypad{
-  max-width:320px !important;
+  max-width:335px !important;
   max-height:34vh !important;
   margin-left:auto !important;
   margin-right:auto !important;
@@ -53,9 +62,10 @@
     max-height:36px !important;
     line-height:36px !important;
   }
-  /* (2) điện thoại: khung Arcade mini nhỏ hơn */
+  /* (2) điện thoại: khung Arcade mini nhỏ hơn — nhưng vẫn giữ
+     >= ~325px để nút 42px (sàn khi fullscreen) không đè nhau */
   #keypad.dynamic-keypad{
-    max-width:min(300px,88vw) !important;
+    max-width:min(335px,94vw) !important;
     max-height:30vh !important;
     margin-left:auto !important;
     margin-right:auto !important;
