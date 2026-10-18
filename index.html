@@ -808,6 +808,23 @@
 			#tab-settings .button-group .btn { padding: 10px 5px; font-size: 12px; }
 			#tab-settings .footer-links a { padding: 11px 8px; gap: 7px; font-size: 12px; }
 		}
+		/* Mobile width correction: use nearly the full viewport, not a narrow centered column */
+		@media (max-width: 760px) {
+			#tab-settings {
+				position: relative !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				width: calc(100vw - 24px) !important;
+				max-width: none !important;
+				margin-left: 0 !important;
+				margin-right: 0 !important;
+				padding-left: 8px !important;
+				padding-right: 8px !important;
+			}
+			#tab-settings .sidebar-header { margin-left: 3px !important; margin-right: 3px !important; }
+			#tab-settings .section-card { width: 100% !important; max-width: none !important; }
+		}
+
 	</style>
 
 </head>
