@@ -12,7 +12,6 @@
   /* (2) điện thoại: khung Arcade mini nhỏ hơn — nhưng vẫn giữ
      >= ~325px để nút 42px (sàn khi fullscreen) không đè nhau */
   #keypad.dynamic-keypad{
-    max-width:min(335px,94vw) !important;
     max-height:30vh !important;
     margin-left:auto !important;
     margin-right:auto !important;
