@@ -683,6 +683,131 @@
 			#tab-settings .font-size-box .font-size-tag { font-size: 11px; }
 			#tab-settings .button-group .btn { padding: 9px 6px; font-size: 12px; }
 		}
+
+
+		/* Polished mobile settings: balanced spacing, alignment and touch targets */
+		@media (max-width: 760px) {
+			#tab-settings {
+				padding: 0 14px calc(28px + env(safe-area-inset-bottom, 0px));
+			}
+			#tab-settings .sidebar-header {
+				font-size: 29px;
+				font-weight: 750;
+				letter-spacing: -.035em;
+				margin: 12px 5px 20px;
+			}
+			#tab-settings .section-card {
+				padding: 18px;
+				margin-bottom: 14px;
+				border: 1px solid rgba(255,255,255,.035);
+				border-radius: 23px;
+				background: var(--card-bg, #1c1c1e);
+				box-shadow: 0 5px 16px rgba(0,0,0,.08);
+			}
+			#tab-settings .section-title {
+				margin: 0 0 10px;
+				font-size: 13px;
+				font-weight: 750;
+				letter-spacing: .08em;
+				text-transform: uppercase;
+				color: var(--muted-text, #85858b);
+			}
+			#tab-settings .pref-item {
+				min-height: 56px;
+				padding: 13px 0;
+				border-bottom: 1px solid rgba(255,255,255,.065);
+				align-items: center;
+			}
+			#tab-settings .pref-item:last-child { border-bottom: 0; }
+			#tab-settings .pref-label {
+				font-size: 15px;
+				font-weight: 600;
+				letter-spacing: -.01em;
+			}
+			#tab-settings .pref-value { color: #a5a5ab; }
+			#tab-settings .pref-arrow { opacity: .65; }
+			#tab-settings .pref-item:has(.color-picker) {
+				flex-wrap: nowrap;
+				gap: 12px;
+			}
+			#tab-settings .pref-item:has(.color-picker) .pref-label {
+				flex: 1 1 auto;
+			}
+			#tab-settings .color-picker { gap: clamp(6px, 2vw, 10px); }
+			#tab-settings .color-dot {
+				width: clamp(25px, 7.2vw, 30px);
+				height: clamp(25px, 7.2vw, 30px);
+				flex-basis: clamp(25px, 7.2vw, 30px);
+			}
+			#tab-settings .pref-item:has(.button-group) {
+				display: block;
+				padding-top: 16px;
+			}
+			#tab-settings .pref-item:has(.button-group) > .pref-label {
+				display: block;
+				margin: 0 0 12px;
+			}
+			#tab-settings .button-group {
+				gap: 9px !important;
+			}
+			#tab-settings .button-group .btn {
+				min-height: 48px;
+				border-radius: 15px;
+				padding: 11px 9px;
+				font-size: 13px;
+				font-weight: 650;
+				letter-spacing: -.015em;
+				box-shadow: none;
+			}
+			#tab-settings .button-group .btn-primary {
+				background: #347ff4;
+				box-shadow: 0 3px 8px rgba(52,127,244,.16);
+			}
+			#tab-settings .controls-container { gap: 8px; }
+			#tab-settings select.filter-box,
+			#tab-settings .controls-container select,
+			#tab-settings .controls-container input {
+				min-height: 46px;
+				border-radius: 13px;
+				padding-left: 13px;
+				padding-right: 12px;
+			}
+			#tab-settings .font-size-item { padding-top: 16px; }
+			#tab-settings .font-size-box .font-size-input {
+				min-height: 44px;
+				border-radius: 13px;
+				font-size: 15px;
+				font-weight: 650;
+			}
+			#tab-settings #clearJitCacheBtn {
+				min-height: 48px;
+				border-radius: 15px;
+				font-size: 14px;
+				font-weight: 650;
+			}
+			#tab-settings .footer-links { gap: 10px; }
+			#tab-settings .footer-links a {
+				min-height: 74px;
+				border-radius: 18px;
+				padding: 13px 12px;
+				font-size: 13px;
+				font-weight: 650;
+				background: rgba(52,127,244,.11);
+				border: 1px solid rgba(52,127,244,.06);
+			}
+			#tab-settings .footer-links svg { width: 18px; height: 18px; }
+		}
+		@media (max-width: 390px) {
+			#tab-settings { padding-right: 11px; padding-left: 11px; }
+			#tab-settings .section-card { padding: 15px; border-radius: 20px; }
+			#tab-settings .pref-item:has(.color-picker) { gap: 7px; }
+			#tab-settings .color-picker { gap: 5px; }
+			#tab-settings .color-dot {
+				width: 25px; height: 25px; flex-basis: 25px;
+			}
+			#tab-settings .button-group .btn { padding: 10px 5px; font-size: 12px; }
+			#tab-settings .footer-links a { padding: 11px 8px; gap: 7px; font-size: 12px; }
+		}
 	</style>
 
 </head>
