@@ -30,10 +30,10 @@
     width: 100% !important;
     max-width: 100% !important;
     
-    /* Cố định cứng chiều cao và vô hiệu hóa các tỷ lệ tự động co giãn */
-    height: 280px !important;
-    max-height: 35vh !important;
-    min-height: 200px !important;
+    /* Ép chiều cao cố định hoàn toàn, chặn đứng JS thay đổi */
+    height: 220px !important;
+    max-height: 220px !important;
+    min-height: 220px !important;
     aspect-ratio: auto !important;
     
     margin: 0 !important;
@@ -41,37 +41,31 @@
     box-sizing: border-box !important;
     background: var(--player-keypad-bg, var(--bg-card, #ffffff)) !important;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden !important;
     
-    /* Chống nháy bằng cách làm mờ khoảnh khắc đầu và chuyển động mượt */
-    animation: keypadFadeIn 0.25s ease-out forwards !important;
+    /* Hiệu ứng chuyển động mượt, che giấu hoàn toàn các nhịp nháy lúc đầu */
+    animation: fadeInKeypad 0.3s ease-in-out forwards !important;
   }
 
-  /* Ép kích thước các phím đều đặn, vuông vắn, không bị bóp méo */
+  /* Ép các phím bấm cân đối, không bị bóp dẹt */
   #keypad.dynamic-keypad .dyn-btn,
   #keypad.dynamic-keypad .dyn-btn-rect,
   #keypad.dynamic-keypad .key {
-    height: 35px !important;
-    max-height: 35px !important;
-    min-height: 35px !important;
+    height: 48px !important;
+    max-height: 48px !important;
+    min-height: 40px !important;
     border-radius: 10px !important;
     box-sizing: border-box !important;
   }
 
-  /* Đẩy khung game lên để không bị bàn phím che khuất */
+  /* Đẩy khung game lên để không bị bàn phím che */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
-    padding-bottom: 35vh !important;
+    padding-bottom: 220px !important;
   }
 }
 
-/* Hiệu ứng chuyển động mượt giúp che đi hoàn toàn cú giật/nháy khi JS load */
-@keyframes keypadFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeInKeypad {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
