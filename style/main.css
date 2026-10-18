@@ -2,6 +2,27 @@
 
 
 
+@media (max-width:700px){
+  /* (1) điện thoại: nút cao 36px */
+  #keypad:not(.dynamic-keypad) .key{
+    height:36px !important;
+    max-height:36px !important;
+    line-height:36px !important;
+  }
+  /* (2) điện thoại: khung Arcade mini nhỏ hơn — nhưng vẫn giữ
+     >= ~325px để nút 42px (sàn khi fullscreen) không đè nhau */
+  #keypad.dynamic-keypad{
+    max-width:min(335px,94vw) !important;
+    max-height:30vh !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+  .player-body #keypad.dynamic-keypad.square-keypad{
+    height:clamp(150px,24vh,200px) !important;
+    max-height:200px !important;
+  }
+}
+
 /* FIX 2026-10-18: fullscreen uses the full viewport. The square dynamic keypad
    must not inherit the 335px width cap used in normal mobile mode. */
 html:fullscreen,
