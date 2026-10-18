@@ -18,24 +18,46 @@ body.player-body:not(.rotated-mode):not(.keypad-hidden) #main:not(.rotate-left):
   transform-origin:top center !important;
 }
 
-/* 3) Hỗ trợ nút fullscreen: ép dùng full viewport */
+/* 3) Hỗ trợ nút fullscreen: ép dùng full viewport.
+   (Nguyên văn code của bạn — giữ đủ các dòng, có dòng nhìn thừa
+   nhưng thực tế đang gánh layout nên không cắt.) */
 html:fullscreen,
-html:-webkit-full-screen{
+html:-webkit-full-screen,
+body.player-body:fullscreen,
+body.player-body:-webkit-full-screen {
   width:100% !important;
   height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
   margin:0 !important;
   overflow:hidden !important;
 }
-body.player-body.player-fullscreen{
+body.player-body.player-fullscreen {
   width:100vw !important;
   height:100vh !important;
   height:100dvh !important;
+  max-width:none !important;
+  max-height:none !important;
 }
-@media (max-width:700px){
-  body.player-body.player-fullscreen #keypad.dynamic-keypad.square-keypad{
+body.player-body.player-fullscreen .player-stage {
+  width:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  flex:1 1 auto !important;
+}
+body.player-body.player-fullscreen #display-container,
+body.player-body.player-fullscreen #display {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+@media (max-width:700px) {
+  body.player-body.player-fullscreen #keypad.dynamic-keypad.square-keypad {
     width:100vw !important;
+    min-width:100vw !important;
     max-width:100vw !important;
     margin-left:calc(50% - 50vw) !important;
     margin-right:calc(50% - 50vw) !important;
+    box-sizing:border-box !important;
   }
 }
