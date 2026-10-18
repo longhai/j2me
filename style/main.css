@@ -7,8 +7,7 @@
      >= ~325px để nút 42px (sàn khi fullscreen) không đè nhau */
   #keypad.dynamic-keypad{
     max-height:30vh !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
+
   }
   
 }
