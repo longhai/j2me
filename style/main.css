@@ -32,8 +32,8 @@
     
     /* Cố định cứng chiều cao và vô hiệu hóa các tỷ lệ tự động co giãn */
     height: 280px !important;
-    max-height: 36vh !important;
-    min-height: 220px !important;
+    max-height: 35vh !important;
+    min-height: 200px !important;
     aspect-ratio: auto !important;
     
     margin: 0 !important;
@@ -50,9 +50,9 @@
   #keypad.dynamic-keypad .dyn-btn,
   #keypad.dynamic-keypad .dyn-btn-rect,
   #keypad.dynamic-keypad .key {
-    height: 46px !important;
-    max-height: 46px !important;
-    min-height: 38px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    min-height: 35px !important;
     border-radius: 10px !important;
     box-sizing: border-box !important;
   }
@@ -60,7 +60,7 @@
   /* Đẩy khung game lên để không bị bàn phím che khuất */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
-    padding-bottom: 38vh !important;
+    padding-bottom: 35vh !important;
   }
 }
 
