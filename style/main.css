@@ -55,6 +55,14 @@
   margin-right:auto !important;
 }
 
+/* (4) Game dính sát lên trên (không còn khoảng hở ở trên game).
+   Bàn phím dynamic bị căn giữa dọc nên game lọt thỏm giữa,
+   hở trên hở dưới không đều với bàn phím thường -> cho tất cả
+   dính lên trên thống nhất. */
+body.player-body:not(.rotated-mode) #display-container{
+  justify-content:flex-start !important;
+}
+
 @media (max-width:700px){
   /* (1) điện thoại: nút cao 36px */
   #keypad:not(.dynamic-keypad) .key{
