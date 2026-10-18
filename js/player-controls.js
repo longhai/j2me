@@ -449,9 +449,21 @@
     fullscreenButton.setAttribute('aria-label', active ? tt('player.exitFs') : tt('player.enterFs'));
     fullscreenButton.title = active ? tt('player.exitFs') : tt('player.enterFs');
     window.setTimeout(fitCanvas, 0);
-    /* Fix fullscreen race: Android đổi viewport bất đồng bộ, đo lại sau khi xong */
-    window.setTimeout(fitCanvas, 400);
-    window.setTimeout(fitCanvas, 1500);
+    /* Fix fullscreen race: Android đổi viewport bất đồng bộ — đo lại định kỳ
+       cho tới khi kích thước khung ổn định (chắc hơn delay cố định). */
+    (function () {
+      var tries = 0, lastW = -1, lastH = -1, stable = 0;
+      var fsTimer = window.setInterval(function () {
+        var w = displayContainer ? displayContainer.clientWidth : 0;
+        var h = displayContainer ? displayContainer.clientHeight : 0;
+        fitCanvas();
+        tries++;
+        if (w === lastW && h === lastH) { stable++; } else { stable = 0; }
+        lastW = w;
+        lastH = h;
+        if (stable >= 2 || tries >= 12) { window.clearInterval(fsTimer); }
+      }, 500);
+    })();
   }
 
   function toggleFullscreen() {
