@@ -2,12 +2,10 @@
 /* ========================================================== */
 /* CẤU HÌNH MẶC ĐỊNH CHO MÁY TÍNH (DESKTOP)                   */
 /* ========================================================== */
-#keypad.dynamic-keypad {
-  position: relative !important;
-  max-height: 35vh !important;
-  gap: 4px !important;
-  margin: 6px auto 0 !important;
-}
+#keypad.dynamic-keypad{max-height:35vh !important;}
+#keypad.dynamic-keypad .key{max-height:58px !important;min-height:44px !important;}
+#keypad.dynamic-keypad{gap:4px !important;}
+#keypad.dynamic-keypad .key{margin:2px !important;}
 /* ========================================================== */
 /* CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY CHO ĐIỆN THOẠI & CHỐNG NHÁY TRIỆT ĐỂ */
 /* ========================================================== */
