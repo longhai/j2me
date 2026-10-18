@@ -2,21 +2,14 @@
 /* ========================================================== */
 /* CẤU HÌNH GHIM CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY CHO DI ĐỘNG        */
 /* ========================================================== */
+/* ========================================================== */
+/* CẤU HÌNH MẶC ĐỊNH CHO MÁY TÍNH (DESKTOP)                   */
+/* ========================================================== */
 #keypad.dynamic-keypad {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 1000 !important;
-  width: 100% !important;
-  max-width: 100% !important;
+  position: relative !important;
   max-height: 35vh !important;
   gap: 4px !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  padding-bottom: env(safe-area-inset-bottom, 8px) !important;
-  background: var(--player-keypad-bg, var(--bg-card, #ffffff)) !important;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15) !important;
+  margin: 6px auto 0 !important;
 }
 
 #keypad.dynamic-keypad .key {
@@ -25,20 +18,32 @@
   margin: 2px !important;
 }
 
-/* Tự động đẩy nội dung hiển thị phía trên lên để bàn phím không che mất */
-body:not(.keypad-hidden) #display-container,
-body:not(.keypad-hidden) .player-stage {
-  padding-bottom: 35vh !important;
-}
-
+/* ========================================================== */
+/* CHỈ CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY KHI DÙNG TRÊN ĐIỆN THOẠI      */
+/* ========================================================== */
 @media (max-width: 700px) {
   #keypad.dynamic-keypad {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    width: 100% !important;
+    max-width: 100% !important;
     max-height: 20vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+    background: var(--player-keypad-bg, var(--bg-card, #ffffff)) !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15) !important;
   }
+
   #keypad.dynamic-keypad .key {
     max-height: 52px !important;
     min-height: 40px !important;
   }
+
+  /* Tự động đẩy nội dung hiển thị trên điện thoại để không bị che */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
     padding-bottom: 22vh !important;
