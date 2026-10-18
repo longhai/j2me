@@ -55,12 +55,21 @@
   margin-right:auto !important;
 }
 
-/* (4) Game dính sát lên trên (không còn khoảng hở ở trên game).
-   Bàn phím dynamic bị căn giữa dọc nên game lọt thỏm giữa,
-   hở trên hở dưới không đều với bàn phím thường -> cho tất cả
-   dính lên trên thống nhất. */
-body.player-body:not(.rotated-mode) #display-container{
+/* (4) Game dính sát lên trên, thống nhất mọi loại bàn phím.
+   GỐC RỄ (sửa 2026-10-18 chiều): chỉ ép justify-content của
+   #display-container là CHƯA ĐỦ — vì #display có margin:auto nên nó
+   vẫn tự căn giữa dọc bất chấp, #display lại căn giữa nội dung bên
+   trong, và #main scale game từ tâm. Phải ghi đè cả 3 chỗ thì game
+   mới dính lên trên ở mọi bàn phím (đúng kiểu compact-stage vẫn làm). */
+body.player-body:not(.rotated-mode):not(.keypad-hidden) #display-container{
   justify-content:flex-start !important;
+}
+body.player-body:not(.rotated-mode):not(.keypad-hidden) #display{
+  margin:0 auto !important;
+  justify-content:flex-start !important;
+}
+body.player-body:not(.rotated-mode):not(.keypad-hidden) #main:not(.rotate-left):not(.rotate-right):not(.rotate-180){
+  transform-origin:top center !important;
 }
 
 @media (max-width:700px){
