@@ -825,7 +825,68 @@
 			#tab-settings .section-card { width: 100% !important; max-width: none !important; }
 		}
 
-	</style>
+	
+		/* Mobile refinement: compact LCDUI inputs and center config actions */
+		@media (max-width: 760px) {
+			#tab-settings .font-size-item {
+				flex-direction: row !important;
+				align-items: center !important;
+				justify-content: space-between;
+				gap: 8px;
+				padding: 10px 0 !important;
+			}
+			#tab-settings .font-size-item > .pref-label {
+				flex: 0 0 auto;
+				font-size: 13px;
+				white-space: nowrap;
+			}
+			#tab-settings .font-size-box {
+				width: auto !important;
+				flex: 1 1 auto;
+				display: grid;
+				grid-template-columns: auto 42px auto 42px auto 42px;
+				justify-content: end;
+				align-items: center;
+				gap: 5px;
+			}
+			#tab-settings .font-size-box .font-size-tag { font-size: 11px; }
+			#tab-settings .font-size-box .font-size-input {
+				width: 42px !important;
+				min-width: 0;
+				min-height: 34px !important;
+				padding: 5px 2px !important;
+				border-radius: 10px;
+				font-size: 13px !important;
+			}
+			#tab-settings .pref-item:has(> .pref-label + .button-group) {
+				display: block;
+				padding: 14px 0 4px;
+			}
+			#tab-settings .pref-item:has(> .pref-label + .button-group) > .pref-label {
+				display: block;
+				margin: 0 0 12px;
+				text-align: center;
+			}
+			#tab-settings .pref-item:has(> .pref-label + .button-group) .button-group {
+				width: min(100%, 460px);
+				margin: 0 auto;
+				justify-content: center;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+		}
+		@media (max-width: 390px) {
+			#tab-settings .font-size-item > .pref-label { font-size: 12px; }
+			#tab-settings .font-size-box {
+				grid-template-columns: auto 36px auto 36px auto 36px;
+				gap: 4px;
+			}
+			#tab-settings .font-size-box .font-size-input {
+				width: 36px !important;
+				font-size: 12px !important;
+			}
+			#tab-settings .font-size-box .font-size-tag { font-size: 10px; }
+		}
+</style>
 
 </head>
 
