@@ -449,6 +449,9 @@
     fullscreenButton.setAttribute('aria-label', active ? tt('player.exitFs') : tt('player.enterFs'));
     fullscreenButton.title = active ? tt('player.exitFs') : tt('player.enterFs');
     window.setTimeout(fitCanvas, 0);
+    /* Fix fullscreen race: Android đổi viewport bất đồng bộ, đo lại sau khi xong */
+    window.setTimeout(fitCanvas, 400);
+    window.setTimeout(fitCanvas, 1500);
   }
 
   function toggleFullscreen() {
