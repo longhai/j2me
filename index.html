@@ -506,6 +506,185 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
 	<script type="text/javascript" src="js/load-versioned.js"></script>
+
+
+	<!-- Mobile settings layout: keep desktop styling unchanged -->
+	<style id="mobile-settings-layout-fix">
+		@media (max-width: 760px) {
+			#tab-settings {
+				box-sizing: border-box;
+				width: 100%;
+				min-width: 0;
+				padding: 0 12px calc(24px + env(safe-area-inset-bottom, 0px));
+				overflow-x: clip;
+			}
+			#tab-settings *, #tab-settings *::before, #tab-settings *::after {
+				box-sizing: border-box;
+				min-width: 0;
+			}
+			#tab-settings .sidebar-header {
+				font-size: clamp(25px, 6vw, 32px);
+				line-height: 1.2;
+				margin: 8px 4px 18px;
+			}
+			#tab-settings .section-card {
+				width: 100%;
+				max-width: 100%;
+				margin: 0 0 14px;
+				padding: 16px;
+				border-radius: 22px;
+				overflow: hidden;
+			}
+			#tab-settings .section-title {
+				font-size: 14px;
+				line-height: 1.35;
+				margin: 0 0 8px;
+				letter-spacing: .035em;
+			}
+			#tab-settings .pref-item {
+				width: 100%;
+				max-width: 100%;
+				padding: 13px 0;
+				gap: 10px;
+			}
+			#tab-settings .pref-label {
+				font-size: 15px;
+				line-height: 1.35;
+				flex: 1 1 auto;
+				overflow-wrap: anywhere;
+			}
+			#tab-settings .pref-value {
+				max-width: 48%;
+				font-size: 14px;
+				text-align: right;
+				white-space: normal;
+			}
+			#tab-settings .pref-arrow { flex: 0 0 auto; }
+			#tab-settings .color-picker {
+				flex: 0 0 auto;
+				max-width: 100%;
+				gap: 9px;
+			}
+			#tab-settings .color-dot {
+				width: 30px;
+				height: 30px;
+				flex: 0 0 30px;
+			}
+			#tab-settings .pref-item:has(.color-picker) {
+				flex-wrap: wrap;
+			}
+			#tab-settings .pref-item:has(.color-picker) .pref-label {
+				flex: 1 1 100%;
+			}
+			#tab-settings .controls-section,
+			#tab-settings .controls-container {
+				width: 100%;
+				max-width: 100%;
+				min-width: 0;
+			}
+			#tab-settings .controls-section {
+				display: block;
+			}
+			#tab-settings .controls-container {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr);
+				gap: 9px;
+				margin-bottom: 10px;
+			}
+			#tab-settings select.filter-box,
+			#tab-settings .controls-container select,
+			#tab-settings .controls-container input {
+				width: 100%;
+				max-width: 100%;
+				min-width: 0;
+				min-height: 44px;
+				font-size: 14px;
+			}
+			#tab-settings .font-size-item {
+				align-items: flex-start;
+				flex-direction: column;
+				gap: 10px;
+			}
+			#tab-settings .font-size-box {
+				width: 100%;
+				display: grid;
+				grid-template-columns: auto minmax(48px, 1fr) auto minmax(48px, 1fr);
+				align-items: center;
+				gap: 7px;
+			}
+			#tab-settings .font-size-box .font-size-tag {
+				font-size: 12px;
+				white-space: nowrap;
+			}
+			#tab-settings .font-size-box .font-size-input {
+				width: 100%;
+				min-width: 0;
+				padding: 9px 5px;
+				text-align: center;
+			}
+			#tab-settings .button-group {
+				width: 100%;
+				max-width: 100%;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 8px !important;
+			}
+			#tab-settings .button-group .btn {
+				width: 100%;
+				min-width: 0;
+				min-height: 44px;
+				padding: 10px 9px;
+				font-size: 13px;
+				line-height: 1.3;
+				white-space: normal;
+				justify-content: center;
+				text-align: center;
+			}
+			#tab-settings #clearJitCacheBtn { margin-top: 4px !important; }
+			#tab-settings .footer-links {
+				width: 100%;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 8px;
+			}
+			#tab-settings .footer-links a {
+				width: 100%;
+				min-width: 0;
+				min-height: 68px;
+				padding: 12px 10px;
+				gap: 8px;
+				font-size: 13px;
+				line-height: 1.3;
+				white-space: normal;
+				overflow-wrap: anywhere;
+			}
+			#tab-settings .footer-links svg { flex: 0 0 16px; }
+			#tab-settings .custom-size-box {
+				width: 100%;
+				max-width: 100%;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			#tab-settings .custom-size-box .custom-size-input {
+				width: 0;
+				min-width: 0;
+				flex: 1 1 0;
+			}
+			#tab-settings .button-group svg { flex: 0 0 16px; }
+		}
+		@media (max-width: 390px) {
+			#tab-settings { padding-right: 9px; padding-left: 9px; }
+			#tab-settings .section-card { padding: 13px; border-radius: 18px; }
+			#tab-settings .font-size-box {
+				grid-template-columns: auto minmax(42px, 1fr) auto minmax(42px, 1fr);
+				gap: 5px;
+			}
+			#tab-settings .font-size-box .font-size-tag { font-size: 11px; }
+			#tab-settings .button-group .btn { padding: 9px 6px; font-size: 12px; }
+		}
+	</style>
+
 </head>
 
 <body>
