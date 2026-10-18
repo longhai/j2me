@@ -449,6 +449,9 @@
     fullscreenButton.setAttribute('aria-label', active ? tt('player.exitFs') : tt('player.enterFs'));
     fullscreenButton.title = active ? tt('player.exitFs') : tt('player.enterFs');
     window.setTimeout(fitCanvas, 0);
+    window.setTimeout(fitCanvas, 120);
+    window.setTimeout(fitCanvas, 350);
+    window.setTimeout(fitCanvas, 700);
     /* Fix fullscreen race: Android đổi viewport bất đồng bộ — đo lại định kỳ
        cho tới khi kích thước khung ổn định (chắc hơn delay cố định). */
     (function () {
@@ -475,9 +478,17 @@
           (document.webkitExitFullscreen ? document.webkitExitFullscreen() :
           (document.mozCancelFullScreen ? document.mozCancelFullScreen() : null));
       } else {
-        result = root.requestFullscreen ? root.requestFullscreen() :
-          (root.webkitRequestFullscreen ? root.webkitRequestFullscreen() :
-          (root.mozRequestFullScreen ? root.mozRequestFullScreen() : null));
+        /* Fullscreen the player body; fall back to the document root on browsers
+           that only support fullscreen on the root element. */
+        var target = document.body || root;
+        var request = target.requestFullscreen || target.webkitRequestFullscreen ||
+          target.mozRequestFullScreen || target.msRequestFullscreen;
+        if (!request) {
+          target = root;
+          request = target.requestFullscreen || target.webkitRequestFullscreen ||
+            target.mozRequestFullScreen || target.msRequestFullscreen;
+        }
+        result = request ? request.call(target) : null;
       }
       if (result && typeof result.catch === 'function') result.catch(function () {});
     } catch (e) {}
