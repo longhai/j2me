@@ -16,10 +16,7 @@
     margin-left:auto !important;
     margin-right:auto !important;
   }
-  .player-body #keypad.dynamic-keypad.square-keypad{
-    height:clamp(150px,24vh,200px) !important;
-    max-height:200px !important;
-  }
+  
 }
 
 /* FIX 2026-10-18: fullscreen uses the full viewport. The square dynamic keypad
