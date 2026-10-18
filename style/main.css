@@ -27,7 +27,7 @@
     z-index: 1000 !important;
     width: 100% !important;
     max-width: 100% !important;
-    max-height: 20vh !important;
+    max-height: 25vh !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     padding-bottom: env(safe-area-inset-bottom, 8px) !important;
