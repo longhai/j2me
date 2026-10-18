@@ -2,13 +2,6 @@
 /* ========================================================== */
 /* CẤU HÌNH MẶC ĐỊNH CHO MÁY TÍNH (DESKTOP)                   */
 /* ========================================================== */
-#keypad.dynamic-keypad{max-height:35vh !important;}
-#keypad.dynamic-keypad .key{max-height:58px !important;min-height:44px !important;}
-#keypad.dynamic-keypad{gap:4px !important;}
-#keypad.dynamic-keypad .key{margin:2px !important;}
-/* ========================================================== */
-/* CẤU HÌNH MẶC ĐỊNH CHO MÁY TÍNH (DESKTOP)                   */
-/* ========================================================== */
 #keypad.dynamic-keypad {
   position: relative !important;
   max-height: 35vh !important;
@@ -25,9 +18,10 @@
 }
 
 /* ========================================================== */
-/* CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY CHO ĐIỆN THOẠI & CHỐNG NHÁY TRIỆT ĐỂ */
+/* CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY CHO ĐIỆN THOẠI & CHỐNG NHÁY        */
 /* ========================================================== */
 @media (max-width: 700px) {
+  /* Chống nháy khi load bằng cách ẩn tạm thời nếu cần hoặc ép cứng khung */
   #keypad.dynamic-keypad {
     position: fixed !important;
     bottom: 0 !important;
@@ -37,10 +31,10 @@
     width: 100% !important;
     max-width: 100% !important;
     
-    /* Ép chiều cao cố định hoàn toàn, chặn đứng JS thay đổi */
-    height: 220px !important;
-    max-height: 220px !important;
-    min-height: 220px !important;
+    /* Dùng chiều cao tự động theo nội dung để các phím không bị bóp méo */
+    height: auto !important;
+    max-height: 40vh !important;
+    min-height: auto !important;
     aspect-ratio: auto !important;
     
     margin: 0 !important;
@@ -48,13 +42,10 @@
     box-sizing: border-box !important;
     background: var(--player-keypad-bg, var(--bg-card, #ffffff)) !important;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15) !important;
-    overflow: hidden !important;
-    
-    /* Hiệu ứng chuyển động mượt, che giấu hoàn toàn các nhịp nháy lúc đầu */
-    animation: fadeInKeypad 0.3s ease-in-out forwards !important;
+    overflow-y: auto !important;
   }
 
-  /* Ép các phím bấm cân đối, không bị bóp dẹt */
+  /* Ép các nút bấm giữ tỷ lệ cân đối, không bị bóp dẹt chiều ngang/dọc */
   #keypad.dynamic-keypad .dyn-btn,
   #keypad.dynamic-keypad .dyn-btn-rect,
   #keypad.dynamic-keypad .key {
@@ -65,14 +56,9 @@
     box-sizing: border-box !important;
   }
 
-  /* Đẩy khung game lên để không bị bàn phím che */
+  /* Đẩy khung game lên để bàn phím cố định không che khuất nội dung */
   body:not(.keypad-hidden) #display-container,
   body:not(.keypad-hidden) .player-stage {
-    padding-bottom: 220px !important;
+    padding-bottom: 36vh !important;
   }
-}
-
-@keyframes fadeInKeypad {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
 }
