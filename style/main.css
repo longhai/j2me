@@ -7,84 +7,72 @@
 #keypad.dynamic-keypad{gap:4px !important;}
 #keypad.dynamic-keypad .key{margin:2px !important;}
 /* ========================================================== */
+/* CẤU HÌNH MẶC ĐỊNH CHO MÁY TÍNH (DESKTOP)                   */
+/* ========================================================== */
+#keypad.dynamic-keypad {
+  position: relative !important;
+  max-height: 35vh !important;
+  gap: 4px !important;
+  margin: 6px auto 0 !important;
+}
+
+#keypad.dynamic-keypad .key,
+#keypad.dynamic-keypad .dyn-btn,
+#keypad.dynamic-keypad .dyn-btn-rect {
+  max-height: 58px !important;
+  min-height: 44px !important;
+  margin: 2px !important;
+}
+
+/* ========================================================== */
 /* CỐ ĐỊNH BÀN PHÍM DƯỚI ĐÁY CHO ĐIỆN THOẠI & CHỐNG NHÁY TRIỆT ĐỂ */
 /* ========================================================== */
-/* ========================================================== */
-/* BỐ CỤC CHIA 2 PHẦN (GAME + BÀN PHÍM) TRÊN ĐIỆN THOẠI        */
-/* ========================================================== */
-/* ========================================================== */
-/* BỐ CỤC 2 PHẦN TRÊN/DƯỚI VÀ GAME FULL CHIỀU NGANG TRÊN MOBILE */
-/* ========================================================== */
 @media (max-width: 700px) {
-  /* 1. Ép toàn bộ body thành cột dọc full màn hình */
-  body.player-body {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 2. Phần trên: Ép khung game bung full tuyệt đối chiều ngang và lấp đầy phần còn lại */
-  body:not(.keypad-hidden) .player-stage,
-  body:not(.keypad-hidden) #display-container,
-  body:not(.keypad-hidden) #display,
-  body:not(.keypad-hidden) #main {
-    flex: 1 1 auto !important;
+  #keypad.dynamic-keypad {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 100% !important;
-    max-height: none !important;
+    
+    /* Ép chiều cao cố định hoàn toàn, chặn đứng JS thay đổi */
+    height: 220px !important;
+    max-height: 220px !important;
+    min-height: 220px !important;
+    aspect-ratio: auto !important;
+    
     margin: 0 !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Bung canvas bên trong game giãn theo chiều rộng/chiều cao màn hình */
-  body:not(.keypad-hidden) #canvas {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important; /* Giữ tỷ lệ game không bị méo nhưng phủ tối đa có thể */
-    max-width: 100% !important;
-    max-height: 100% !important;
-  }
-
-  /* 3. Phần dưới: Bàn phím cố định gọn gàng ở đáy */
-  #keypad.dynamic-keypad,
-  body:not(.keypad-hidden) #keypad:not(.dynamic-keypad) {
-    position: relative !important;
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 34vh !important;
-    max-height: 34vh !important;
-    margin: 0 !important;
-    padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 8px)) 4px !important;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 8px)) 4px !important;
     box-sizing: border-box !important;
     background: var(--player-keypad-bg, var(--bg-card, #ffffff)) !important;
-    border-top: 1px solid var(--player-separator, rgba(0, 0, 0, 0.1)) !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: stretch !important;
-    justify-content: center !important;
-    z-index: 1000 !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15) !important;
     overflow: hidden !important;
+    
+    /* Hiệu ứng chuyển động mượt, che giấu hoàn toàn các nhịp nháy lúc đầu */
+    animation: fadeInKeypad 0.3s ease-in-out forwards !important;
   }
 
-  /* Đảm bảo các nút phím không bị bóp méo */
-  #keypad.dynamic-keypad .key,
+  /* Ép các phím bấm cân đối, không bị bóp dẹt */
   #keypad.dynamic-keypad .dyn-btn,
-  #keypad.dynamic-keypad .dyn-btn-rect {
-    flex: 1 !important;
-    height: auto !important;
-    min-height: 36px !important;
-    margin: 2px !important;
+  #keypad.dynamic-keypad .dyn-btn-rect,
+  #keypad.dynamic-keypad .key {
+    height: 48px !important;
+    max-height: 48px !important;
+    min-height: 40px !important;
+    border-radius: 10px !important;
     box-sizing: border-box !important;
   }
+
+  /* Đẩy khung game lên để không bị bàn phím che */
+  body:not(.keypad-hidden) #display-container,
+  body:not(.keypad-hidden) .player-stage {
+    padding-bottom: 220px !important;
+  }
+}
+
+@keyframes fadeInKeypad {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
