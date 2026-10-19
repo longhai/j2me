@@ -886,7 +886,81 @@
 			}
 			#tab-settings .font-size-box .font-size-tag { font-size: 10px; }
 		}
-</style>
+
+		/* Theme-aware settings colors: keep mobile styling correct in light and dark mode */
+		:root[data-theme="dark"] {
+			--settings-card-bg: #1c1c1e;
+			--settings-card-border: rgba(255,255,255,.06);
+			--settings-divider: rgba(255,255,255,.09);
+			--settings-text: #f4f4f6;
+			--settings-muted: #a5a5ad;
+			--settings-control-bg: #2b2b2e;
+			--settings-control-border: rgba(255,255,255,.07);
+			--settings-link-bg: rgba(52,127,244,.12);
+			--settings-link-border: rgba(100,155,255,.12);
+			color-scheme: dark;
+		}
+		:root[data-theme="light"] {
+			--settings-card-bg: #ffffff;
+			--settings-card-border: rgba(20,30,45,.09);
+			--settings-divider: rgba(20,30,45,.10);
+			--settings-text: #20242b;
+			--settings-muted: #687180;
+			--settings-control-bg: #f1f3f6;
+			--settings-control-border: rgba(20,30,45,.10);
+			--settings-link-bg: #edf4ff;
+			--settings-link-border: #dce9ff;
+			color-scheme: light;
+		}
+		@media (prefers-color-scheme: light) {
+			:root:not([data-theme="dark"]):not([data-theme="light"]) {
+				--settings-card-bg: #ffffff;
+				--settings-card-border: rgba(20,30,45,.09);
+				--settings-divider: rgba(20,30,45,.10);
+				--settings-text: #20242b;
+				--settings-muted: #687180;
+				--settings-control-bg: #f1f3f6;
+				--settings-control-border: rgba(20,30,45,.10);
+				--settings-link-bg: #edf4ff;
+				--settings-link-border: #dce9ff;
+				color-scheme: light;
+			}
+		}
+		#tab-settings .section-card {
+			background: var(--settings-card-bg, #1c1c1e) !important;
+			border-color: var(--settings-card-border, rgba(255,255,255,.06)) !important;
+			color: var(--settings-text, inherit);
+		}
+		#tab-settings .section-title,
+		#tab-settings .pref-label { color: var(--settings-text, inherit); }
+		#tab-settings .section-title { color: var(--settings-muted, #85858b); }
+		#tab-settings .pref-value,
+		#tab-settings .font-size-tag,
+		#tab-settings .custom-size-x { color: var(--settings-muted, #a5a5ab) !important; }
+		#tab-settings .pref-item { border-bottom-color: var(--settings-divider, rgba(255,255,255,.065)) !important; }
+		#tab-settings .font-size-input,
+		#tab-settings .custom-size-input,
+		#tab-settings select.filter-box,
+		#tab-settings .controls-container select,
+		#tab-settings .controls-container input,
+		#tab-settings .button-group .btn {
+			background-color: var(--settings-control-bg, #2b2b2e);
+			border-color: var(--settings-control-border, rgba(255,255,255,.07));
+			color: var(--settings-text, inherit);
+		}
+		#tab-settings .button-group .btn-primary { background: #347ff4 !important; color: #fff !important; }
+		#tab-settings .footer-links a {
+			background: var(--settings-link-bg, rgba(52,127,244,.11)) !important;
+			border-color: var(--settings-link-border, rgba(52,127,244,.06)) !important;
+			color: #347ff4 !important;
+		}
+		:root[data-theme="light"] #tab-settings .color-dot:first-child,
+		:root:not([data-theme="dark"]) #tab-settings .color-dot:first-child {
+			border-color: rgba(20,30,45,.15);
+			box-shadow: inset 0 0 0 1px rgba(20,30,45,.06);
+		}
+
+	</style>
 
 </head>
 
