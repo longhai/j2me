@@ -960,6 +960,15 @@
 			box-shadow: inset 0 0 0 1px rgba(20,30,45,.06);
 		}
 
+		/* --- Phân trang + lọc nhà phát triển --- */
+		.pagination-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 10px;}
+		.pagination-info{font-size:13px;color:var(--miuix-on-surface-secondary);min-width:120px;text-align:center;}
+		.btn:disabled{opacity:.45;cursor:default;}
+		#pubNavBtn span{white-space:nowrap;}
+		#publisherSheet .pub-sheet-list{max-height:52vh;overflow-y:auto;}
+		#publisherSheet .action-sheet-item .pub-count{margin-left:auto;font-size:13px;font-weight:400;color:var(--miuix-on-surface-tertiary);}
+		#publisherSheet .action-sheet-item.active{color:var(--miuix-primary);font-weight:700;}
+		#pubNavBtn.pub-on,#pubRailBtn.pub-on{color:var(--miuix-primary);}
 	</style>
 
 </head>
@@ -1033,6 +1042,14 @@
 			</svg>
 			<span data-i18n="nav.settings">Cài đặt</span>
 		</button>
+		<button class="rail-item" id="pubRailBtn" onclick="openPublisherMenu()">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M3 21h18"/>
+				<path d="M5 21V8l7-5 7 5v13"/>
+				<path d="M9 21v-4h6v4"/>
+			</svg>
+			<span>Nhà phát triển</span>
+		</button>
 	</nav>
 
 	<!-- TopAppBar -->
@@ -1067,6 +1084,11 @@
 				<div id="parentContainer">
 					<div id="gameListDiv"></div>
 				</div>
+			</div>
+			<div class="pagination-bar" id="paginationBar" style="display:none">
+				<button class="btn btn-sm" id="pgPrev" onclick="pgGo(-1)">‹ Trước</button>
+				<span class="pagination-info" id="pgInfo"></span>
+				<button class="btn btn-sm" id="pgNext" onclick="pgGo(1)">Sau ›</button>
 			</div>
 		</div>
 
@@ -1647,6 +1669,13 @@
 				<button class="btn btn-primary" onclick="gsSaveAndClose()" data-i18n="btn.save">Lưu</button>
 			</div>
 		</div>
+		<div class="game-settings-sheet" id="publisherSheet">
+			<div class="action-sheet-handle"></div>
+			<div class="action-sheet-header">Nhà phát triển</div>
+			<div class="pub-sheet-list" id="pubSheetList"></div>
+			<div class="action-sheet-divider"></div>
+			<button class="action-sheet-cancel" onclick="closeActionSheet()">Hủy</button>
+		</div>
 	</div>
 
 	<!-- Bottom Navigation Bar -->
@@ -1667,6 +1696,14 @@
 				<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
 			</svg>
 			<span data-i18n="nav.settings">Cài đặt</span>
+		</button>
+		<button class="bottom-nav-item" id="pubNavBtn" onclick="openPublisherMenu()">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M3 21h18"/>
+				<path d="M5 21V8l7-5 7 5v13"/>
+				<path d="M9 21v-4h6v4"/>
+			</svg>
+			<span>Nhà phát triển</span>
 		</button>
 	</nav>
 
@@ -1726,6 +1763,190 @@
 				}, { passive: true });
 			})();
 		});
+	</script>
+	<script>
+	/* Phân trang + lọc theo nhà phát triển cho danh sách game (24 game/trang) */
+	(function () {
+		var PAGE_SIZE = 24;
+		var state = { page: 1, publisher: "" };
+		var pubMap = {};
+		var allGames = [];
+
+		function escH(t) {
+			return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+		}
+		function textOf(el, sel) { var n = el.querySelector(sel); return n ? n.textContent.trim() : ""; }
+		function buildPubMap() {
+			pubMap = {};
+			if (window.GameList) {
+				for (var i = 0; i < GameList.length; i++) {
+					var g = GameList[i];
+					if (g && g.jarName) pubMap[g.jarName] = g.publisher || "";
+				}
+			}
+		}
+		function publisherOf(el) {
+			if (el.getAttribute("data-local") === "1") {
+				var parts = textOf(el, ".game-meta").split("\u00b7");
+				for (var i = parts.length - 1; i >= 0; i--) {
+					var t = parts[i].trim();
+					if (t && !/^v[\d.]+$/.test(t)) return t;
+				}
+				return "";
+			}
+			return pubMap[el.getAttribute("data-jarname")] || "";
+		}
+		function rebuildIndex() {
+			buildPubMap();
+			allGames = [];
+			var els = document.querySelectorAll("#gameListDiv .game");
+			for (var i = 0; i < els.length; i++) {
+			allGames.push({ el: els[i], name: textOf(els[i], ".game-name"), publisher: publisherOf(els[i]) || "Kh\u00e1c" });
+			}
+			buildPublisherSheet();
+			applyView();
+		}
+		function currentQuery() {
+			var s = document.getElementById("gameSearch");
+			return s ? (s.value || "").toLowerCase().trim() : "";
+		}
+		function filteredGames() {
+			var q = currentQuery(), pub = state.publisher;
+			return allGames.filter(function (g) {
+				if (pub && g.publisher !== pub) return false;
+				if (q && (g.name + " " + g.publisher).toLowerCase().indexOf(q) < 0) return false;
+				return true;
+			});
+		}
+		function renderPagination(pages, total) {
+			var bar = document.getElementById("paginationBar");
+			if (!bar) return;
+			bar.style.display = pages > 1 ? "flex" : "none";
+			var info = document.getElementById("pgInfo");
+			if (info) info.textContent = "Trang " + state.page + "/" + pages + " \u00b7 " + total + " game";
+			var pv = document.getElementById("pgPrev"), nx = document.getElementById("pgNext");
+			if (pv) pv.disabled = state.page <= 1;
+			if (nx) nx.disabled = state.page >= pages;
+		}
+		function markPubButtons() {
+			var on = !!state.publisher;
+			["pubNavBtn", "pubRailBtn"].forEach(function (id) {
+				var b = document.getElementById(id);
+				if (b) b.classList.toggle("pub-on", on);
+			});
+		}
+		function applyView() {
+			var vis = filteredGames();
+			var pages = Math.max(1, Math.ceil(vis.length / PAGE_SIZE));
+			if (state.page > pages) state.page = pages;
+			if (state.page < 1) state.page = 1;
+			var start = (state.page - 1) * PAGE_SIZE;
+			var pageSet = {};
+			for (var i = start; i < Math.min(start + PAGE_SIZE, vis.length); i++) pageSet[i] = true;
+			for (var j = 0; j < allGames.length; j++) {
+				var inFilter = vis.indexOf(allGames[j]) >= 0;
+				allGames[j].el.style.display = (inFilter && pageSet[vis.indexOf(allGames[j])]) ? "" : "none";
+			}
+			renderPagination(pages, vis.length);
+			markPubButtons();
+		}
+		window.pgGo = function (d) {
+			state.page += d;
+			applyView();
+			window.scrollTo({ top: 0 });
+		};
+		function publisherStats() {
+			var map = {}, order = [];
+			allGames.forEach(function (g) {
+				var p = g.publisher;
+				if (!map[p]) { map[p] = 0; order.push(p); }
+				map[p]++;
+			});
+			order.sort(function (a, b) { return (map[b] - map[a]) || (a < b ? -1 : 1); });
+			return { map: map, order: order };
+		}
+		function buildPublisherSheet() {
+			var list = document.getElementById("pubSheetList");
+			if (!list) return;
+			var st = publisherStats(), html = "";
+			html += pubItem("", "T\u1ea5t c\u1ea3", allGames.length);
+			st.order.forEach(function (p) { html += pubItem(p, p, st.map[p]); });
+			list.innerHTML = html;
+			list.onclick = function (e) {
+				var b = e.target.closest ? e.target.closest("button[data-pub]") : null;
+				if (b) selectPublisher(b.getAttribute("data-pub"));
+			};
+		}
+		function pubItem(val, label, count) {
+			var active = state.publisher === val ? " active" : "";
+			return '<button class="action-sheet-item' + active + '" data-pub="' + escH(val) + '">' +
+				"<span>" + escH(label) + '</span><span class="pub-count">' + count + "</span></button>";
+		}
+		window.selectPublisher = function (pub) {
+			state.publisher = pub || "";
+			state.page = 1;
+			buildPublisherSheet();
+			applyView();
+			if (typeof window.closeActionSheet === "function") window.closeActionSheet();
+		};
+		window.openPublisherMenu = function () {
+			buildPublisherSheet();
+			var overlay = document.getElementById("actionSheetOverlay");
+			var main = document.getElementById("actionSheetMain");
+			var gs = document.getElementById("gameSettingsSheet");
+			var ps = document.getElementById("publisherSheet");
+			if (!overlay || !ps) return;
+			if (main) main.style.visibility = "hidden";
+			if (gs) gs.classList.remove("active");
+			ps.classList.add("active");
+			ensureCloseWrapped();
+			overlay.classList.add("show");
+			document.body.style.overflow = "hidden";
+		};
+		function initPubPager() {
+			rebuildIndex();
+			var si = document.getElementById("gameSearch");
+			if (si && !si._pubBound) {
+				si._pubBound = true;
+				si.addEventListener("input", function () { state.page = 1; applyView(); });
+			}
+			var target = document.getElementById("gameListDiv");
+			if (target && window.MutationObserver && !target._pubObserved) {
+				target._pubObserved = true;
+				new MutationObserver(function () { rebuildIndex(); }).observe(target, { childList: true });
+			}
+		}
+		function ensureCloseWrapped() {
+			if (typeof window.closeActionSheet === "function" && !window.closeActionSheet._pubWrapped) {
+				var orig = window.closeActionSheet;
+				var wrapped = function () {
+					var s2 = document.getElementById("publisherSheet");
+					if (s2) s2.classList.remove("active");
+					return orig.apply(this, arguments);
+				};
+				wrapped._pubWrapped = true;
+				window.closeActionSheet = wrapped;
+				return true;
+			}
+			return typeof window.closeActionSheet === "function";
+		}
+		var _wrapTimer = setInterval(function () { if (ensureCloseWrapped()) clearInterval(_wrapTimer); }, 400);
+		setTimeout(function () {
+			clearInterval(_wrapTimer);
+			if (!ensureCloseWrapped()) {
+				window.closeActionSheet = function () {
+					var s2 = document.getElementById("publisherSheet");
+					if (s2) s2.classList.remove("active");
+					var overlay = document.getElementById("actionSheetOverlay");
+					if (overlay) overlay.classList.remove("show");
+					document.body.style.overflow = "";
+				};
+			}
+		}, 15000);
+		if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initPubPager);
+		else initPubPager();
+		setTimeout(initPubPager, 2000);
+	})();
 	</script>
 </body>
 
