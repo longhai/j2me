@@ -969,6 +969,8 @@
 		#publisherSheet .action-sheet-item .pub-count{margin-left:auto;font-size:13px;font-weight:400;color:var(--miuix-on-surface-tertiary);}
 		#publisherSheet .action-sheet-item.active{color:var(--miuix-primary);font-weight:700;}
 		#pubNavBtn.pub-on,#pubRailBtn.pub-on{color:var(--miuix-primary);}
+		.game.just-played{animation:justPlayed 2.4s ease;}
+		@keyframes justPlayed{0%,55%{box-shadow:0 0 0 3px var(--miuix-primary);}100%{box-shadow:none;}}
 		#fab{display:none!important;}
 	</style>
 
@@ -1819,7 +1821,7 @@
 			allGames.push({ el: els[i], name: textOf(els[i], ".game-name"), publisher: publisherOf(els[i]) || "Kh\u00e1c" });
 			}
 			buildPublisherSheet();
-			applyView();
+			if (!tryRestoreLastPlayed()) applyView();
 		}
 		function currentQuery() {
 			var s = document.getElementById("gameSearch");
@@ -1918,6 +1920,54 @@
 			overlay.classList.add("show");
 			document.body.style.overflow = "hidden";
 		};
+		/* Nhớ game vừa chơi để khi thoát game luôn quay lại đúng vị trí */
+		var RESTORE_KEY = "j2me_last_played";
+		function saveLastPlayed(jar) {
+			try {
+				var si = document.getElementById("gameSearch");
+				localStorage.setItem(RESTORE_KEY, JSON.stringify({
+					jar: jar, pub: state.publisher, q: si ? si.value : "", page: state.page
+				}));
+			} catch (e) {}
+		}
+		var _ojTimer = setInterval(function () {
+			if (typeof window.openJar === "function" && !window.openJar._pubWrapped) {
+				var origOJ = window.openJar;
+				var wOJ = function (jar) { saveLastPlayed(jar); return origOJ.apply(this, arguments); };
+				wOJ._pubWrapped = true;
+				window.openJar = wOJ;
+				clearInterval(_ojTimer);
+			}
+		}, 400);
+		setTimeout(function () { clearInterval(_ojTimer); }, 15000);
+		function tryRestoreLastPlayed() {
+			if (!allGames.length) return false;
+			var raw = null, d = null;
+			try { raw = localStorage.getItem(RESTORE_KEY); } catch (e) {}
+			if (!raw) return false;
+			try { d = JSON.parse(raw); } catch (e) {}
+			try { localStorage.removeItem(RESTORE_KEY); } catch (e) {}
+			if (!d || !d.jar) return false;
+			var si = document.getElementById("gameSearch");
+			if (si && typeof d.q === "string") si.value = d.q;
+			state.publisher = d.pub || "";
+			var vis = filteredGames(), idx = -1;
+			for (var i = 0; i < vis.length; i++) {
+				if (vis[i].el.getAttribute("data-jarname") === d.jar) { idx = i; break; }
+			}
+			if (idx >= 0) state.page = Math.floor(idx / PAGE_SIZE) + 1;
+			else if (d.page) state.page = d.page;
+			applyView();
+			if (idx >= 0) {
+				var el = vis[idx].el;
+				setTimeout(function () {
+					try { el.scrollIntoView({ block: "center" }); } catch (e) { el.scrollIntoView(); }
+					el.classList.add("just-played");
+					setTimeout(function () { el.classList.remove("just-played"); }, 2500);
+				}, 80);
+			}
+			return true;
+		}
 		function initPubPager() {
 			rebuildIndex();
 			var si = document.getElementById("gameSearch");
