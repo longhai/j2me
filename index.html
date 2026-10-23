@@ -1002,7 +1002,13 @@
 			body.view-phone #gameListDiv .game img{width:52px;height:52px;border-radius:13px;}
 			body.view-phone #gameListDiv .game-name{font-size:11px;}
 		}
-	</style>
+	
+		/* Tiêu đề luôn nằm trên thanh trên cùng (bỏ dòng tiêu đề lớn) — gọn thêm 1 dòng, chỉ áp dụng mobile */
+		@media (max-width: 767px) {
+			#topBarLargeTitle { display: none; }
+			#topAppBar .top-bar-small-title { opacity: 1; transform: none; }
+		}
+</style>
 </head>
 
 <body>
