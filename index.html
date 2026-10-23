@@ -977,11 +977,9 @@
 
 	<!-- Kiểu hiển thị "Màn hình điện thoại": lưới icon như màn hình chính điện thoại -->
 	<style id="phone-view-style">
-		.view-switch{display:flex;justify-content:flex-end;margin:2px 2px 10px;}
-		.view-switch-group{display:inline-flex;background:var(--miuix-select-bg,#e9e9ee);border-radius:999px;padding:3px;}
-		.view-switch-btn{display:inline-flex;align-items:center;border:0;background:transparent;color:var(--miuix-on-surface-secondary,#666);font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-		.view-switch-btn svg{width:15px;height:15px;margin-right:6px;flex:0 0 auto;}
-		.view-switch-btn.active{background:var(--miuix-card,#fff);color:var(--miuix-primary,#347ff4);box-shadow:0 1px 4px rgba(0,0,0,.14);}
+		#viewToggleBtn{flex:0 0 auto;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:var(--miuix-select-bg,#e9e9ee);color:var(--miuix-primary,#347ff4);cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;}
+		#viewToggleBtn:active{transform:scale(.92);}
+		#viewToggleBtn svg{width:17px;height:17px;color:inherit;flex:0 0 auto;}
 		/* --- Lưới icon kiểu màn hình chính điện thoại --- */
 		body.view-phone #gameListDiv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 6px;padding:18px 10px 10px;}
 		body.view-phone #gameListDiv .game{flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:2px 1px;border:0;border-radius:16px;background:transparent;box-shadow:none;}
@@ -1120,14 +1118,9 @@
 					<line x1="21" y1="21" x2="16.65" y2="16.65"/>
 				</svg>
 				<input type="text" id="gameSearch" placeholder="Tìm game" data-i18n-placeholder="search.placeholder" oninput="filterGames()">
+				<button type="button" id="viewToggleBtn" class="view-toggle-btn" onclick="toggleListView()" title="Xem dạng điện thoại" aria-label="Xem dạng điện thoại"><svg id="viewIconGrid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg><svg id="viewIconList" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:none"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3.5" y1="6" x2="3.6" y2="6"/><line x1="3.5" y1="12" x2="3.6" y2="12"/><line x1="3.5" y1="18" x2="3.6" y2="18"/></svg></button>
 			</div>
 			
-			<div class="view-switch" role="group" aria-label="Kiểu hiển thị danh sách game">
-				<div class="view-switch-group">
-					<button type="button" class="view-switch-btn" id="viewBtnList" onclick="setListView('list')" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3.5" y1="6" x2="3.6" y2="6"/><line x1="3.5" y1="12" x2="3.6" y2="12"/><line x1="3.5" y1="18" x2="3.6" y2="18"/></svg><span>Danh sách</span></button>
-					<button type="button" class="view-switch-btn" id="viewBtnPhone" onclick="setListView('phone')" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg><span>Điện thoại</span></button>
-				</div>
-			</div>
 			<div class="section-card section-card-games">
 				<div id="parentContainer">
 					<div id="gameListDiv"></div>
@@ -2060,10 +2053,18 @@
 		window.setListView = function (mode) {
 			mode = mode === "phone" ? "phone" : "list";
 			document.body.classList.toggle("view-phone", mode === "phone");
-			var bl = document.getElementById("viewBtnList"), bp = document.getElementById("viewBtnPhone");
-			if (bl) { bl.classList.toggle("active", mode === "list"); bl.setAttribute("aria-pressed", mode === "list" ? "true" : "false"); }
-			if (bp) { bp.classList.toggle("active", mode === "phone"); bp.setAttribute("aria-pressed", mode === "phone" ? "true" : "false"); }
+			var btn = document.getElementById("viewToggleBtn");
+			var gi = document.getElementById("viewIconGrid"), li = document.getElementById("viewIconList");
+			if (gi) gi.style.display = mode === "phone" ? "none" : "";
+			if (li) li.style.display = mode === "phone" ? "" : "none";
+			if (btn) {
+				var label = mode === "phone" ? "Xem dạng danh sách" : "Xem dạng điện thoại";
+				btn.title = label; btn.setAttribute("aria-label", label);
+			}
 			try { localStorage.setItem(KEY, mode); } catch (e) {}
+		};
+		window.toggleListView = function () {
+			window.setListView(document.body.classList.contains("view-phone") ? "list" : "phone");
 		};
 		window.setListView(saved());
 	})();
