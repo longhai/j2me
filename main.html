@@ -842,6 +842,148 @@
     });
   </script>
 
+
+  <!-- ============================================================
+       THANH TRÊN TỰ ẨN SAU 3 GIÂY (khi vào chơi game)
+       Cách dùng: dán nguyên khối này vào main.html,
+       ngay TRƯỚC thẻ đóng body (sau script loadVersionedPage cũng được).
+       Không cần sửa main.css / player-controls.js, không cần bump version.
+  
+       Cách hoạt động:
+       - Vào trang: thanh hiện, đếm 3 giây rồi tự trượt lên ẩn.
+       - Chạm vào dải 24px ở mép trên cùng (nút #player-top-reveal
+         có sẵn trong trang) -> thanh hiện lại, lại đếm 3 giây.
+       - Đang thao tác trên thanh (giữ chuột / đang mở menu "Thêm" /
+         đang chọn tốc độ...) thì KHÔNG ẩn, chờ xong mới đếm lại.
+       - Chế độ toàn màn hình giữ nguyên cơ chế cũ (2.5s trong
+         player-controls.js), khối này tự tắt khi đang fullscreen.
+       ============================================================ -->
+  <style>
+    /* Chỉ áp dụng ngoài fullscreen, tránh đụng cơ chế cũ */
+    body.toolbar-autohide:not(.player-fullscreen) .player-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-100%);
+      transition: transform .18s ease, opacity .18s ease, visibility .18s;
+      pointer-events: none;
+    }
+    body.toolbar-autohide:not(.player-fullscreen).toolbar-shown .player-bar,
+    body.toolbar-autohide:not(.player-fullscreen) .player-bar:focus-within {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    /* Dải chạm ở mép trên để gọi thanh lại — giống hệt fullscreen */
+    body.toolbar-autohide:not(.player-fullscreen) .player-top-reveal {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 24px;
+      height: max(24px, env(safe-area-inset-top, 0px));
+      z-index: 1999;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      touch-action: manipulation;
+    }
+  </style>
+  <script>
+    // Thanh trên tự ẩn sau 3s — ES5 cho khớp phần còn lại của player
+    (function () {
+      'use strict';
+      var DELAY = 3000; // <-- muốn đổi thời gian ẩn thì sửa số này (mili-giây)
+      var body = document.body;
+      var bar = document.querySelector('.player-bar');
+      var reveal = document.getElementById('player-top-reveal');
+      if (!bar) return;
+  
+      var timer = null;
+      var hovered = false;
+  
+      function isBusy() {
+        // Đang mở menu "Thêm", đang giữ chuột trên thanh,
+        // hoặc focus đang nằm trong thanh (ô chọn tốc độ...) -> chưa ẩn
+        if (hovered) return true;
+        if (body.classList.contains('player-more-open')) return true;
+        var panel = document.getElementById('player-more-panel');
+        if (panel && !panel.hidden) return true;
+        if (document.activeElement && bar.contains(document.activeElement)) return true;
+        return false;
+      }
+  
+      function scheduleHide() {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          if (isBusy()) { scheduleHideRetry(); return; }
+          body.classList.remove('toolbar-shown');
+        }, DELAY);
+      }
+      function scheduleHideRetry() {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          if (isBusy()) { scheduleHideRetry(); return; }
+          body.classList.remove('toolbar-shown');
+        }, 1500);
+      }
+  
+      function showBar() {
+        // Fullscreen đã có cơ chế riêng trong player-controls.js
+        if (body.classList.contains('player-fullscreen')) return;
+        body.classList.add('toolbar-shown');
+        scheduleHide();
+      }
+  
+      // Vào chơi: bật chế độ tự ẩn + hiện thanh rồi đếm 3s
+      body.classList.add('toolbar-autohide');
+      showBar();
+      // Thanh chuyển sang fixed nên sân game giãn full chiều cao:
+      // báo resize 1 lần để canvas fit lại (player-controls có nghe resize)
+      window.setTimeout(function () {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+        if (typeof window.j2meFitPlayerCanvas === 'function') window.j2meFitPlayerCanvas();
+      }, 300);
+  
+      // Tương tác trên thanh -> hiện + đếm lại 3s từ đầu
+      bar.addEventListener('click', showBar);
+      bar.addEventListener('focusin', showBar);
+      bar.addEventListener('focusout', showBar);
+      if (window.PointerEvent) {
+        bar.addEventListener('pointerenter', function (e) {
+          hovered = (e.pointerType === 'mouse');
+          showBar();
+        });
+        bar.addEventListener('pointerleave', function () { hovered = false; showBar(); });
+        document.addEventListener('pointermove', function (e) {
+          if (e.pointerType === 'mouse' && e.clientY <= 24) showBar();
+        });
+      } else {
+        bar.addEventListener('mouseenter', function () { hovered = true; showBar(); });
+        bar.addEventListener('mouseleave', function () { hovered = false; showBar(); });
+        document.addEventListener('mousemove', function (e) {
+          if (e.clientY <= 24) showBar();
+        });
+      }
+  
+      // Chạm dải mép trên -> hiện lại
+      if (reveal) {
+        reveal.addEventListener('click', showBar);
+        reveal.addEventListener('focus', showBar);
+        reveal.addEventListener('touchstart', showBar, window.__eventPassiveTrue || false);
+      }
+  
+      // Thoát fullscreen quay về chế độ thường -> đếm lại 3s
+      document.addEventListener('fullscreenchange', showBar);
+      document.addEventListener('webkitfullscreenchange', showBar);
+    })();
+  </script>
+
 </body>
 
 </html>
