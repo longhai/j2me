@@ -306,23 +306,26 @@ function renderOne(g){
     +'<option value="'+KB_FULL+'"'+(g.kb===KB_FULL?' selected':'')+'>Đầy đủ (phím cứng)</option>'
     +'<option value="'+KB_NONE+'"'+(g.kb===KB_NONE?' selected':'')+'>Không phím (cảm ứng)</option>'
     +'</select></label></div>';
-  d.querySelector('.selSize').addEventListener('change',function(e){g.size=e.target.value;});
-  d.querySelector('.selKb').addEventListener('change',function(e){g.kb=e.target.value;});
+  d.querySelector('.selSize').addEventListener('change',function(e){g.size=e.target.value;refreshOutput();});
+  d.querySelector('.selKb').addEventListener('change',function(e){g.kb=e.target.value;refreshOutput();});
   list.appendChild(d);
 }
 document.getElementById('applySize').addEventListener('click',function(){
   var v=gSize.value;
   games.forEach(function(g){g.size=v;});
   Array.prototype.forEach.call(list.querySelectorAll('.selSize'),function(s){s.value=v;});
+  refreshOutput();
 });
 document.getElementById('applyKb').addEventListener('click',function(){
   var v=gKb.value;
   games.forEach(function(g){g.kb=v;});
   Array.prototype.forEach.call(list.querySelectorAll('.selKb'),function(s){s.value=v;});
+  refreshOutput();
 });
-function finish(){
-  games.sort(function(a,b){return a.jarName.localeCompare(b.jarName);});
-  document.getElementById('globalBar').style.display='flex';
+/* Sinh lại nội dung gamelist.js từ games[] hiện tại — gọi mỗi lần sửa
+   để file tải về luôn khớp với ô chọn trên màn hình (trước đây out.value
+   chỉ sinh 1 lần trong finish() nên sửa sau đó không vào file tải về). */
+function buildGamelistText(){
   var lines=['// Tu dong sinh bang tools/gen-gamelist.html — dung sua tay!',
     '// Them game: mo lai cong cu nay, chon them file .jar, tai file moi.',
     'var isbatch=0,GameList=['];
@@ -334,11 +337,20 @@ function finish(){
   lines.push('];');
   lines.push('function getGameRuntimeDefaults(e){for(var a=0;a<GameList.length;a++){var n=GameList[a];'
     +'if(n.jarName===e)return{canvasSize:n.canvasSize||"",keyboardLayout:n.keyboardLayout||"",rotation:n.screenRotation||"none"}}return null}');
-  out.value=lines.join('\n');
+  return lines.join('\n');
+}
+function refreshOutput(){
+  if(!dlBtn.disabled)out.value=buildGamelistText();
+}
+function finish(){
+  games.sort(function(a,b){return a.jarName.localeCompare(b.jarName);});
+  document.getElementById('globalBar').style.display='flex';
   dlBtn.disabled=false;
+  out.value=buildGamelistText();
   status.textContent='Xong! Tìm thấy '+games.length+' game. Kiểm tra/chỉnh lại màn hình từng game rồi bấm "Tải gamelist.js".';
 }
 dlBtn.onclick=function(){
+  out.value=buildGamelistText();
   var blob=new Blob([out.value],{type:'text/javascript;charset=utf-8'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
