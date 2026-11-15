@@ -1,7 +1,7 @@
 // Tu dong sinh bang tools/gen-gamelist.html — dung sua tay!
 // Them game: mo lai cong cu nay, chon them file .jar, tai file moi.
 var isbatch=0,GameList=[
-{name:"Loan 12 Su Quan",jarName:"12warlords_[240x320].jar",midletClassName:"com.mic.smsgame.suquan.SQMidlet",publisher:"mob.ua",version:"1.0.0",canvasSize:"size-480x800",keyboardLayout:"无按键",screenRotation:"none"},
+{name:"Loan 12 Su Quan",jarName:"12warlords_[240x320].jar",midletClassName:"com.mic.smsgame.suquan.SQMidlet",publisher:"mob.ua",version:"1.0.0",canvasSize:"size-240x320",keyboardLayout:"无按键",screenRotation:"none"},
 {name:"A Good Day To Die Hard DEDOMIL.NET",jarName:"AGoodDayToDieHard_Samsung_GT_S8000_EN_IGP_EU_TS_UNCENSORED_101.jar",midletClassName:"GloftDIH5",publisher:"Gameloft SA",version:"1.0.1",canvasSize:"size-480x800",keyboardLayout:"无按键",screenRotation:"none"},
 {name:"Asphalt6 Adrenaline",jarName:"Asphalt6_Samsung_GT_S8000_EN_IGP_EU_TS_103.jar",midletClassName:"GloftASP6",publisher:"Gameloft SA",version:"1.0.3",canvasSize:"size-480x800",keyboardLayout:"无按键",screenRotation:"none"},
 {name:"Assassin's Creed Revelations",jarName:"Assassin_sCreed_Revelations_Samsung_GT_S8000_EN_IGP_EU_TS_110.jar",midletClassName:"GloftACRE",publisher:"Gameloft SA",version:"1.1.0",canvasSize:"size-480x800",keyboardLayout:"无按键",screenRotation:"none"},
