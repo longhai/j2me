@@ -984,6 +984,77 @@
     })();
   </script>
 
+  <!-- ============================================================
+       BÀN PHÍM KHÍT 6 CỘT (fix ảnh 16/11: hàng trái/phải lệch nhau)
+       Nguyên nhân: #keypad cũ là 2 cột flex riêng — #joypad 3 hàng,
+       #numpad 4 hàng — nên ◀/OK/▶ rơi xuống ngang hàng 7/8/9,
+       C/▼/Tắt rơi xuống ngang hàng */0/#, không bao giờ thẳng được.
+       Cách sửa: cho #joypad/#numpad "tan ra" (display:contents),
+       #keypad thành 1 lưới 6 cột x 4 hàng duy nhất, từng phím đặt
+       đúng ô bằng ID (không đổi HTML, không đổi ID, JS bấm phím cũ
+       vẫn chạy). Chỉ áp cho bàn phím thường, không đụng bàn phím
+       động (dynamic-keypad) hay chế độ xoay (rotated).
+       ============================================================ -->
+  <style>
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) {
+      display: grid !important;
+      grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+      grid-template-rows: repeat(4, auto) !important;
+      gap: 6px !important;
+      align-items: stretch !important;
+    }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) > div {
+      display: contents !important;
+      margin: 0 !important;
+    }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) br {
+      display: none !important;
+    }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) .key {
+      width: auto !important;
+      height: auto !important;
+      min-height: 48px !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      line-height: 1.2 !important;
+    }
+    /* Chỉ giữ 1 bộ *,0,# (bộ numpad2 trùng ID thì ẩn hẳn) */
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) .key.numpad2 {
+      display: none !important;
+    }
+    /* Hàng 1: Trái ▲ Phải | 1 2 3 */
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #choice { grid-column: 1 !important; grid-row: 1 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #up { grid-column: 2 !important; grid-row: 1 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #back { grid-column: 3 !important; grid-row: 1 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num1 { grid-column: 4 !important; grid-row: 1 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num2 { grid-column: 5 !important; grid-row: 1 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num3 { grid-column: 6 !important; grid-row: 1 !important; }
+    /* Hàng 2: ◀ OK ▶ | 4 5 6 */
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #left { grid-column: 1 !important; grid-row: 2 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #ok { grid-column: 2 !important; grid-row: 2 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #right { grid-column: 3 !important; grid-row: 2 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num4 { grid-column: 4 !important; grid-row: 2 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num5 { grid-column: 5 !important; grid-row: 2 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num6 { grid-column: 6 !important; grid-row: 2 !important; }
+    /* Hàng 3: (ô ẩn) ▼ Tắt | 7 8 9 — ô ẩn tự rơi vào cột 1 hàng 3 */
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #down { grid-column: 2 !important; grid-row: 3 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #exit { grid-column: 3 !important; grid-row: 3 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num7 { grid-column: 4 !important; grid-row: 3 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num8 { grid-column: 5 !important; grid-row: 3 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num9 { grid-column: 6 !important; grid-row: 3 !important; }
+    /* Hàng 4: (trống) | * 0 # */
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #star.numpad { grid-column: 4 !important; grid-row: 4 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #num0.numpad { grid-column: 5 !important; grid-row: 4 !important; }
+    body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) #pound.numpad { grid-column: 6 !important; grid-row: 4 !important; }
+    @media (max-width: 700px) {
+      body.player-body:not(.rotated-mode) #keypad:not(.dynamic-keypad):not(.rotated) .key {
+        min-height: 44px !important;
+      }
+    }
+  </style>
+
 </body>
 
 </html>
