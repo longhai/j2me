@@ -9,7 +9,30 @@
   var exportButton = document.getElementById('player-export-save');
   var importButton = document.getElementById('player-import-save');
   var input = document.getElementById('importSaveFile');
+  var radiusSlider = document.getElementById('player-button-radius');
+  var radiusValue = document.getElementById('player-button-radius-value');
+  var RADIUS_KEY = 'keyboard_button_radius';
   var busy = false;
+  function getStoredRadius() {
+    var v = null;
+    try { v = window.localStorage.getItem(RADIUS_KEY); } catch (e) { v = null; }
+    v = parseInt(v, 10);
+    if (!isFinite(v)) v = 12;
+    return Math.max(0, Math.min(28, v));
+  }
+  function applyRadius(v) {
+    v = Math.max(0, Math.min(28, Math.round(v)));
+    document.documentElement.style.setProperty('--dyn-btn-radius', v + 'px');
+    if (radiusSlider) radiusSlider.value = String(v);
+    if (radiusValue) radiusValue.textContent = v + 'px';
+    try { window.localStorage.setItem(RADIUS_KEY, String(v)); } catch (e) {}
+  }
+  if (radiusSlider) {
+    radiusSlider.addEventListener('input', function () {
+      applyRadius(parseInt(radiusSlider.value, 10) || 0);
+    });
+  }
+  applyRadius(getStoredRadius());
   var keyboardIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h.01M12 9h.01M17 9h.01M7 13h.01M12 13h.01M17 13h.01M8 16h8"/></svg>';
   function t(key) { return window.I18n ? I18n.t(key) : key; }
   function close(restoreFocus) {
@@ -21,6 +44,9 @@
     J2MEPlayerControls.revealToolbar();
   }
   function refresh() {
+    var rv = getStoredRadius();
+    if (radiusSlider) radiusSlider.value = String(rv);
+    if (radiusValue) radiusValue.textContent = rv + 'px';
     colors.textContent = '';
     var colorNames = ['color.white', 'color.black', 'color.purple', 'color.orange', 'color.red', 'color.green'];
     KeyboardLayouts.BG_COLORS.forEach(function (color, index) {
