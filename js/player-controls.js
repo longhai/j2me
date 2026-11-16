@@ -173,14 +173,27 @@
        gamerresize values were already applied to the canvas CSS size by MIDP
        and must not receive a second player-shell scale. */
     var fixedScale = configuredScale();
-    var scale = unlimited ? 1 : (fixedScale === null ?
-      Math.min(availableWidth / renderedWidth, availableHeight / renderedHeight) : 1);
+    var scale;
+    var widthFit = false;
+    if (!unlimited && fixedScale === null && canCompact) {
+      var scaleW = availableWidth / renderedWidth;
+      var fittedHeightW = renderedHeight * scaleW;
+      if (isFinite(scaleW) && scaleW > 0 && fittedHeightW <= availableHeight &&
+          availableHeight - fittedHeightW >= 135) {
+        scale = scaleW;
+        widthFit = true;
+      }
+    }
+    if (scale === undefined) {
+      scale = unlimited ? 1 : (fixedScale === null ?
+        Math.min(availableWidth / renderedWidth, availableHeight / renderedHeight) : 1);
+    }
 
     if (!isFinite(scale) || scale <= 0) scale = 1;
     var fittedHeight = renderedHeight * scale;
     var slack = Math.max(0, availableHeight - fittedHeight);
     var compact = canCompact && fittedHeight <= availableHeight &&
-      slack <= Math.max(96, availableHeight * 0.22);
+      (widthFit || slack <= Math.max(96, availableHeight * 0.22));
 
     body.classList.toggle('compact-stage', compact);
     body.classList.toggle('large-stage-gap', canCompact && !compact);
