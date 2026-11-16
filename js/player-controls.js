@@ -178,8 +178,9 @@
     if (!unlimited && fixedScale === null && canCompact) {
       var scaleW = availableWidth / renderedWidth;
       var fittedHeightW = renderedHeight * scaleW;
-      if (isFinite(scaleW) && scaleW > 0 && fittedHeightW <= availableHeight &&
-          availableHeight - fittedHeightW >= 135) {
+      var totalHeight = actualAvailableHeight + (keypadVisible && keypad ? keypad.clientHeight : 0);
+      if (isFinite(scaleW) && scaleW > 0 && fittedHeightW <= totalHeight &&
+          totalHeight - fittedHeightW >= 135) {
         scale = scaleW;
         widthFit = true;
       }
@@ -192,8 +193,8 @@
     if (!isFinite(scale) || scale <= 0) scale = 1;
     var fittedHeight = renderedHeight * scale;
     var slack = Math.max(0, availableHeight - fittedHeight);
-    var compact = canCompact && fittedHeight <= availableHeight &&
-      (widthFit || slack <= Math.max(96, availableHeight * 0.22));
+    var compact = canCompact && (widthFit ||
+      (fittedHeight <= availableHeight && slack <= Math.max(96, availableHeight * 0.22)));
 
     body.classList.toggle('compact-stage', compact);
     body.classList.toggle('large-stage-gap', canCompact && !compact);
