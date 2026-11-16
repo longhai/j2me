@@ -15,6 +15,7 @@
   --bg: #f2f2f7; --card: #fff; --text: #000; --text2: #6c6c70; --text3: #aeaeb2;
   --accent: #007aff; --divider: rgba(0,0,0,0.08); --hover: rgba(0,0,0,0.04);
   --editor-bg: #6B5CE7;
+  --dyn-btn-radius: 12px;
 }
 
 :root[data-theme="dark"] {
@@ -79,7 +80,7 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
 }
 .ed-hint { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.55); font-size: 12px; pointer-events: none; }
 .ed-btn { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.92); color: #333; font-weight: 600; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; box-shadow: 0 2px 8px rgba(0,0,0,0.12); z-index: 2; }
-.ed-btn.rect { border-radius: 10px; box-sizing: border-box; }
+.ed-btn.rect { border-radius: var(--dyn-btn-radius, 12px); box-sizing: border-box; }
 .ed-btn.selected { outline: 3px solid var(--accent); outline-offset: 2px; }
 .ed-btn-x { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #ff3b30; color: #fff; font-size: 11px; line-height: 20px; text-align: center; cursor: pointer; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 .ed-joy { position: absolute; border-radius: 50%; background: rgba(140,120,220,0.28); border: 2px solid rgba(255,255,255,0.22); transform: translate(-50%, -50%); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; z-index: 2; box-sizing: border-box; }
@@ -149,7 +150,7 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
   .pv-zone.square-layout { padding-bottom: 0; }
 }
 .pv-btn { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.92); color: #333; font-weight: 600; font-size: 12px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(0,0,0,0.12); box-sizing: border-box; }
-.pv-btn.rect { border-radius: 10px; }
+.pv-btn.rect { border-radius: var(--dyn-btn-radius, 12px); }
 .pv-joy { position: absolute; border-radius: 50%; background: rgba(140,120,220,0.28); border: 2px solid rgba(255,255,255,0.22); transform: translate(-50%, -50%); box-sizing: border-box; }
 .pv-joy-inner { position: absolute; width: 40%; height: 40%; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(255,255,255,0.7); }
 .pv-actions { display: flex; }
@@ -220,6 +221,11 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
       <label data-i18n="kb.size">Cỡ</label>
       <input type="range" id="edSizeRange" min="6" max="40" value="12" oninput="edSizeChange(this.value)">
       <span class="size-val" id="edSizeVal">12</span>
+    </div>
+    <div class="ed-size-bar" id="edRadiusBar">
+      <label>Bo góc</label>
+      <input type="range" id="edRadiusRange" min="0" max="28" value="12" oninput="edRadiusChange(this.value)">
+      <span class="size-val" id="edRadiusVal">12px</span>
     </div>
     <div class="ed-toolbar">
       <button onclick="showPresetSheet()">
@@ -404,6 +410,8 @@ function closeDefaultPicker() {
 function openEditor(source, layout) {
   _editSource = source;
   _editLayout = layout;
+  var _viNames = {'方形全键盘': 'Bàn phím vuông', '街机极简': 'Arcade mini', '街机4键': 'Arcade 4 phím', '无按键': 'Không dùng bàn phím'};
+  if (_viNames[_editLayout.name]) _editLayout.name = _viNames[_editLayout.name];
   _editOriginal = KL.cloneLayout(layout);
   _selectedIdx = -1;
   // Layout vuông (Bàn phím vuông / E72) thì phím thêm vào mặc định là vuông
@@ -518,7 +526,7 @@ function renderEditor() {
     }
   }
 
-  document.getElementById('edInfoName').textContent = _editLayout.name;
+  document.getElementById('edInfoName').textContent = layoutLabel(_editLayout.name);
   document.getElementById('edInfoCount').textContent = t('kb.keyCount', { n: btns.length });
 
   var sizeBar = document.getElementById('edSizeBar');
@@ -533,6 +541,26 @@ function renderEditor() {
   }
 }
 
+var RADIUS_KEY = 'keyboard_button_radius';
+function getStoredRadius() {
+  var v = null;
+  try { v = localStorage.getItem(RADIUS_KEY); } catch (e) { v = null; }
+  v = parseInt(v, 10);
+  if (!isFinite(v)) v = 12;
+  return Math.max(0, Math.min(28, v));
+}
+function applyEditorRadius(v) {
+  v = Math.max(0, Math.min(28, Math.round(v)));
+  document.documentElement.style.setProperty('--dyn-btn-radius', v + 'px');
+  var r = document.getElementById('edRadiusRange');
+  var rv = document.getElementById('edRadiusVal');
+  if (r) r.value = String(v);
+  if (rv) rv.textContent = v + 'px';
+  try { localStorage.setItem(RADIUS_KEY, String(v)); } catch (e) {}
+}
+function edRadiusChange(val) {
+  applyEditorRadius(parseInt(val, 10) || 0);
+}
 function edSizeChange(val) {
   val = parseInt(val);
   document.getElementById('edSizeVal').textContent = val;
@@ -797,7 +825,7 @@ function showPreview(source, layout) {
   _previewSource = source;
   _previewLayout = layout;
 
-  document.getElementById('previewSheetTitle').textContent = layout.name;
+  document.getElementById('previewSheetTitle').textContent = layoutLabel(layout.name);
   var zone = document.getElementById('previewZone');
   var bgColor = KL.getBgColor() || '#6B5CE7';
   zone.style.background = bgColor;
@@ -867,6 +895,7 @@ function esc(s) {
 // ===== Init =====
 function _keyboardEditorOnLoad() {
   if (window.I18n) I18n.apply(document);
+  applyEditorRadius(getStoredRadius());
   renderList();
 
   // Auto-open editor if URL has params
