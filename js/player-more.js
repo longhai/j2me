@@ -17,7 +17,7 @@
     var v = null;
     try { v = window.localStorage.getItem(RADIUS_KEY); } catch (e) { v = null; }
     v = parseInt(v, 10);
-    if (!isFinite(v)) v = 12;
+    if (!isFinite(v)) v = 5;
     return Math.max(0, Math.min(28, v));
   }
   function applyRadius(v) {
