@@ -4,6 +4,8 @@
 <script src="js/theme.js"></script>
 <meta charset="UTF-8">
 <title>Cài đặt bàn phím</title>
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
 <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script type="text/javascript" src="js/i18n.js"></script>
@@ -121,6 +123,7 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
 .sheet-btn-circle { width: 44px; height: 44px; border-radius: 50%; background: #e5e5ea; color: #333; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; }
 .sheet-btn-circle .check { position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%; background: #34C759; color: #fff; font-size: 10px; line-height: 16px; text-align: center; }
 .sheet-btn-circle.added { opacity: 0.45; }
+.sheet-btn-circle.rect { border-radius: 10px; }
 .sheet-btn-label { font-size: 11px; color: var(--text2); text-align: center; }
 
 
@@ -227,6 +230,10 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span data-i18n="kb.add">Thêm</span>
       </button>
+      <button onclick="toggleShape()" id="edShapeBtn" title="Đổi phím đang chọn (hoặc phím sẽ thêm) giữa vuông và tròn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>
+        <span id="edShapeLabel">Tròn</span>
+      </button>
       <button onclick="editorReset()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
         <span data-i18n="kb.reset">Đặt lại</span>
@@ -297,6 +304,7 @@ var _editLayout = null;
 var _editOriginal = null;
 var _editSource = null; // { type: 'preset'|'custom', index: number }
 var _selectedIdx = -1;
+var _newBtnShape = 'circle'; // hình phím sẽ thêm / đổi: 'circle' (tròn) | 'rect' (vuông)
 var _dragState = null;
 
 // ===== List View =====
@@ -398,6 +406,9 @@ function openEditor(source, layout) {
   _editLayout = layout;
   _editOriginal = KL.cloneLayout(layout);
   _selectedIdx = -1;
+  // Layout vuông (Bàn phím vuông / E72) thì phím thêm vào mặc định là vuông
+  _newBtnShape = (layout.className === 'square-keypad') ? 'rect' : 'circle';
+  updateShapeBtn();
 
   var bgColor = KL.getBgColor() || '#6B5CE7';
   document.querySelector('.ed-canvas').style.background = bgColor;
@@ -431,6 +442,32 @@ function editorApply() {
 function editorReset() {
   _editLayout = KL.cloneLayout(_editOriginal);
   _selectedIdx = -1;
+  renderEditor();
+}
+
+// Đổi hình phím: bấm để chuyển giữa Tròn và Vuông.
+// Nếu đang chọn 1 phím thì phím đó đổi hình ngay; nếu không chọn phím nào
+// thì chỉ đổi hình mặc định cho phím sẽ thêm sau đó.
+function updateShapeBtn() {
+  var el = document.getElementById('edShapeLabel');
+  if (el) el.textContent = (_newBtnShape === 'rect') ? 'Vuông' : 'Tròn';
+}
+function toggleShape() {
+  _newBtnShape = (_newBtnShape === 'rect') ? 'circle' : 'rect';
+  if (_selectedIdx >= 0 && _selectedIdx < _editLayout.buttons.length) {
+    var b = _editLayout.buttons[_selectedIdx];
+    var def = KL.BUTTON_DEFS[b.id];
+    if (!def || !def.isJoystick) {
+      if (_newBtnShape === 'rect') {
+        var s = b.size || 12;
+        b.shape = 'rect'; b.width = s; b.height = Math.round(s * 1.4); delete b.size;
+      } else {
+        var w = b.width || 12;
+        delete b.shape; b.size = w; delete b.width; delete b.height;
+      }
+    }
+  }
+  updateShapeBtn();
   renderEditor();
 }
 
@@ -687,8 +724,8 @@ function showAddSheet() {
     existing[_editLayout.buttons[i].id] = true;
   }
 
-  var categories = ['direction', 'joystick', 'softkey', 'numkey'];
-  var catLabels = { direction: t('kb.cat.direction'), joystick: t('kb.cat.joystick'), softkey: t('kb.cat.softkey'), numkey: t('kb.cat.numkey') };
+  var categories = ['direction', 'joystick', 'softkey', 'numkey', 'letter', 'punct'];
+  var catLabels = { direction: t('kb.cat.direction'), joystick: t('kb.cat.joystick'), softkey: t('kb.cat.softkey'), numkey: t('kb.cat.numkey'), letter: 'Phím chữ', punct: 'Phím ký tự' };
 
   for (var ci = 0; ci < categories.length; ci++) {
     var cat = categories[ci];
@@ -708,7 +745,7 @@ function showAddSheet() {
         item.className = 'sheet-btn-item';
         var added = !!existing[btnId];
         var circle = document.createElement('div');
-        circle.className = 'sheet-btn-circle' + (added ? ' added' : '');
+        circle.className = 'sheet-btn-circle' + (added ? ' added' : '') + ((_newBtnShape === 'rect' && !btnDef.isJoystick) ? ' rect' : '');
         circle.textContent = btnDef.isJoystick ? '⊙' : btnDef.label;
         if (added) circle.innerHTML += '<span class="check">✓</span>';
         var label = document.createElement('div');
@@ -720,7 +757,11 @@ function showAddSheet() {
 
         if (!added) {
           item.addEventListener('click', function() {
-            _editLayout.buttons.push({ id: btnId, x: 50, y: 50, size: btnDef.isJoystick ? 28 : 12 });
+            if (_newBtnShape === 'rect' && !btnDef.isJoystick) {
+              _editLayout.buttons.push({ id: btnId, x: 50, y: 50, shape: 'rect', width: 12, height: 17 });
+            } else {
+              _editLayout.buttons.push({ id: btnId, x: 50, y: 50, size: btnDef.isJoystick ? 28 : 12 });
+            }
             _selectedIdx = _editLayout.buttons.length - 1;
             renderEditor();
             closeAddSheet();
