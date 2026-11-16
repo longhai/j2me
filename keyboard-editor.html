@@ -452,6 +452,13 @@ function updateShapeBtn() {
   var el = document.getElementById('edShapeLabel');
   if (el) el.textContent = (_newBtnShape === 'rect') ? 'Vuông' : 'Tròn';
 }
+// Chiều cao (%) của phím vuông sao cho HIỆN ĐÚNG HÌNH VUÔNG trong khung editor:
+// khung dọc 4:5 thì % cao tính theo chiều cao khung (dài hơn chiều rộng),
+// nên height = width x 0.8 mới ra hình vuông thật; khung vuông 21:10 thì
+// giữ tỉ lệ phím mẫu (rộng, thấp) 1.15 cho khớp các phím còn lại.
+function _rectHeightFor(w) {
+  return Math.round(w * (_editLayout.className === 'square-keypad' ? 1.15 : 0.8));
+}
 function toggleShape() {
   _newBtnShape = (_newBtnShape === 'rect') ? 'circle' : 'rect';
   if (_selectedIdx >= 0 && _selectedIdx < _editLayout.buttons.length) {
@@ -460,7 +467,7 @@ function toggleShape() {
     if (!def || !def.isJoystick) {
       if (_newBtnShape === 'rect') {
         var s = b.size || 12;
-        b.shape = 'rect'; b.width = s; b.height = Math.round(s * 1.4); delete b.size;
+        b.shape = 'rect'; b.width = s; b.height = _rectHeightFor(s); delete b.size;
       } else {
         var w = b.width || 12;
         delete b.shape; b.size = w; delete b.width; delete b.height;
@@ -758,7 +765,7 @@ function showAddSheet() {
         if (!added) {
           item.addEventListener('click', function() {
             if (_newBtnShape === 'rect' && !btnDef.isJoystick) {
-              _editLayout.buttons.push({ id: btnId, x: 50, y: 50, shape: 'rect', width: 12, height: 17 });
+              _editLayout.buttons.push({ id: btnId, x: 50, y: 50, shape: 'rect', width: 12, height: _rectHeightFor(12) });
             } else {
               _editLayout.buttons.push({ id: btnId, x: 50, y: 50, size: btnDef.isJoystick ? 28 : 12 });
             }
