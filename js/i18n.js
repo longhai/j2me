@@ -477,14 +477,10 @@
   var pref = 'auto';
   var resolved = DEFAULT_CODE;
   var LAYOUT_KEYS = {
-    '方形全键盘': 'layout.square',
     '全键盘': 'layout.full',
     '国产兼容键盘': 'layout.cncompat',
     '经典键盘': 'layout.classic',
     '简化键盘': 'layout.simple',
-    '街机极简': 'layout.arcadeMini',
-    '街机4键': 'layout.arcade4',
-    '无按键': 'layout.none'
   };
 
   function safeGet(key) {
@@ -611,6 +607,8 @@
   }
 
   function layoutName(name) {
+    var vi = {'方形全键盘': 'Bàn phím vuông', '街机极简': 'Arcade mini', '街机4键': 'Arcade 4 phím', '无按键': 'Không dùng bàn phím'};
+    if (vi[name]) return vi[name];
     var key = LAYOUT_KEYS[name];
     return key ? t(key) : (name || t('layout.unset'));
   }

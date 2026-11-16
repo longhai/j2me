@@ -392,7 +392,7 @@
     updateKeypadButton();
     window.setTimeout(function () {
       fitCanvas();
-      /* 无按键初始以 display:none 建 DOM；等舞台重排后再按真实尺寸缩放按键。 */
+      /* Không dùng bàn phím: DOM ban đầu display:none; đợi sân khấu xếp lại rồi mới co giãn phím theo kích thước thật. */
       if (!hidden && typeof window._resizeDynamicKeypad === 'function') {
         window._resizeDynamicKeypad();
       }
@@ -584,7 +584,7 @@
 
   var layoutFromUrl = queryValue('keyboardLayout');
   var configuredHidden = keypad.classList.contains('gamepad-0') ||
-    queryValue('gamepad') === '0' || layoutFromUrl === '无按键';
+    queryValue('gamepad') === '0' || (layoutFromUrl === 'Không dùng bàn phím' || layoutFromUrl === '无按键');
   var storedHidden = safeGet(window.localStorage, 'j2me.player.keypadHidden');
   var keypadFromUrl = queryValue('gamepad') !== '' || layoutFromUrl !== '';
   setKeypadHidden(keypadFromUrl ? configuredHidden :
