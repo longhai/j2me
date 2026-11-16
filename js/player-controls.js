@@ -161,7 +161,7 @@
     var unlimited = window.config && config.canvasSize === 'size-no';
     var keypadVisible = keypad && !body.classList.contains('keypad-hidden') &&
       window.getComputedStyle(keypad).display !== 'none';
-    var canCompact = isPhone && keypadVisible && keypad.classList.contains('square-keypad');
+    var canCompact = isPhone && keypadVisible && keypad.classList.contains('dynamic-keypad');
     var stageInset = 0;
     var availableWidth = Math.max(1, displayContainer.clientWidth - stageInset);
     var actualAvailableHeight = Math.max(1, displayContainer.clientHeight - stageInset);
