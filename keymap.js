@@ -9,7 +9,7 @@ var keyDownTime_Star=0,overlayFocusIndex=-1;function isTextInputTarget(e){if(!e|
         r = window.innerHeight || document.documentElement.clientHeight || 0,
         s = e.clientWidth || a;
     if(s){
-      var i = a >= 701 ? Math.min(240, .28 * r) : Math.max(180, Math.min(240, .28 * r));
+      var i = a >= 701 ? Math.min(200, .24 * r) : Math.max(150, Math.min(200, .24 * r));
       if(a < 701) i = Math.min(i, Math.max(80, r - 134));
       e.style.height = Math.round(i) + "px";
     }
