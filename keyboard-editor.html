@@ -69,7 +69,7 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
 .ed-header button:active { background: rgba(255,255,255,0.35); }
 .ed-header-title { flex: 1; text-align: center; color: #fff; font-size: 17px; font-weight: 600; }
 .ed-canvas { flex: 1; background: var(--editor-bg); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.ed-zone { width: 100%; max-width: 440px; height: 0; padding-bottom: 125%; aspect-ratio: 4 / 5; border: 2px dashed rgba(255,255,255,0.3); border-radius: 12px; position: relative; }
+.ed-zone { width: 100%; max-width: 440px; height: 0; padding-bottom: 62.5%; aspect-ratio: 8 / 5; border: 2px dashed rgba(255,255,255,0.3); border-radius: 12px; position: relative; }
 @supports (aspect-ratio: 1 / 1) {
   .ed-zone { height: auto; padding-bottom: 0; }
 }
@@ -140,7 +140,7 @@ body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 
 .sheet-preset-count { font-size: 13px; color: var(--text2); }
 
 /* Preview sheet */
-.pv-zone { width: 100%; max-width: 360px; height: 0; padding-bottom: 125%; aspect-ratio: 4 / 5; border-radius: 12px; position: relative; margin: 12px auto 16px; }
+.pv-zone { width: 100%; max-width: 360px; height: 0; padding-bottom: 62.5%; aspect-ratio: 8 / 5; border-radius: 12px; position: relative; margin: 12px auto 16px; }
 @supports (aspect-ratio: 1 / 1) {
   .pv-zone { height: auto; padding-bottom: 0; }
 }
@@ -453,11 +453,11 @@ function updateShapeBtn() {
   if (el) el.textContent = (_newBtnShape === 'rect') ? 'Vuông' : 'Tròn';
 }
 // Chiều cao (%) của phím vuông sao cho HIỆN ĐÚNG HÌNH VUÔNG trong khung editor:
-// khung dọc 4:5 thì % cao tính theo chiều cao khung (dài hơn chiều rộng),
-// nên height = width x 0.8 mới ra hình vuông thật; khung vuông 21:10 thì
+// khung editor giờ là 8:5 (khớp khung phím thật khi chơi, đo được ~1.6),
+// nên height = width x 1.6 mới ra hình vuông thật; khung vuông 21:10 thì
 // giữ tỉ lệ phím mẫu (rộng, thấp) 1.15 cho khớp các phím còn lại.
 function _rectHeightFor(w) {
-  return Math.round(w * (_editLayout.className === 'square-keypad' ? 1.15 : 0.8));
+  return Math.round(w * (_editLayout.className === 'square-keypad' ? 1.15 : 1.6));
 }
 function toggleShape() {
   _newBtnShape = (_newBtnShape === 'rect') ? 'circle' : 'rect';
